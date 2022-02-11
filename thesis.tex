@@ -1,0 +1,109 @@
+%  $Description: Thesis
+%  $Author: Animesh Sinha $
+%  $Date: 11 February 2022  $
+%  $Revision: 1.0 $
+
+\documentclass[11pt]{book}
+\usepackage{style/iiit_thesis}
+
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{algorithm2e}
+\graphicspath{{images/}{./}} % To include images in other directories
+
+\long\def\symbolfootnote[#1]#2{\begingroup%
+\def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
+\renewcommand{\baselinestretch}{1.2}
+\onecolumn
+%--------------------------------------------------------
+
+\begin{document}
+\pagenumbering{roman}
+
+%% TITLE PAGE
+\input{sections/title.tex}
+
+%% COPYRIGHT PAGE
+\newpage
+\thispagestyle{empty}
+\renewcommand{\thesisdedication}{{\large Copyright \copyright~~NAME, YEAR\\}{\large All Rights Reserved\\}}
+\thesisdedicationpage
+
+%% CERTIFICATE PAGE
+\input{sections/certificate.tex}
+
+%%% DEDICATION PAGE
+\newpage
+\thispagestyle{empty}
+\renewcommand{\thesisdedication}{\large To SOMEONE}
+\thesisdedicationpage
+
+\mastersthesis
+\renewcommand{\baselinestretch}{1.5}
+
+% ACKNOWLEDGEMENTS PAGE
+\chapter*{Acknowledgments}
+\label{ch:ack}
+\input{sections/acknowledgements.tex}
+
+%% ABSTRACT PAGE
+\chapter*{Abstract}
+\label{ch:abstract}
+\input{sections/abstract.tex}
+
+\tableofcontents
+\listoffigures
+\listoftables
+%--------------------------------------------------------
+
+\chapter{Introduction}
+\label{ch:intro}
+\input{chapters/ch1_intro_quantum.tex}
+
+%--------------------------------------------------------
+
+\chapter{Chapter Name}
+\label{ch:chap2}
+\input{chapters/ch2_intro_rl.tex}
+
+%--------------------------------------------------------
+
+\chapter{Chapter Name}
+\label{ch:chap3}
+\input{chapters/ch3_qubit_routing.tex}
+
+%--------------------------------------------------------
+
+\chapter{Chapter Name}
+\label{ch:chap4}
+\input{chapters/ch4_qml_qleet.tex}
+
+%--------------------------------------------------------
+\chapter{Conclusions}
+\label{ch:conc}
+\input{sections/conclusion.tex}
+
+%--------------------------------------------------------
+%%% Optional appendix
+%\appendix
+%\chapter{}
+%\label{}
+
+%--------------------------------------------------------
+% Recommended 'Related Publication'
+\chapter*{Related Publications}
+\label{ch:relatedPubs}
+\input{sections/related_papers.tex}
+
+%--------------------------------------------------------
+
+\bibliographystyle{style/latex8}
+%\bibliography{References,Introduction/References} % To include one or more reference.bib files
+\bibliography{bibliography/main} 
+
+\end{document}
