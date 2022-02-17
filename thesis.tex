@@ -14,7 +14,11 @@
 \usepackage{graphicx}
 \usepackage{multirow}
 \usepackage{algorithm2e}
-\graphicspath{{images/}{./}} % To include images in other directories
+
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{braket}
+\usepackage{hyperref}
 
 \long\def\symbolfootnote[#1]#2{\begingroup%
 \def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
@@ -31,7 +35,7 @@
 %% COPYRIGHT PAGE
 \newpage
 \thispagestyle{empty}
-\renewcommand{\thesisdedication}{{\large Copyright \copyright~~NAME, YEAR\\}{\large All Rights Reserved\\}}
+\renewcommand{\thesisdedication}{{\large Copyright \copyright~~Animesh Sinha, 2022\\}{\large All Rights Reserved\\}}
 \thesisdedicationpage
 
 %% CERTIFICATE PAGE
@@ -40,7 +44,7 @@
 %%% DEDICATION PAGE
 \newpage
 \thispagestyle{empty}
-\renewcommand{\thesisdedication}{\large To SOMEONE}
+\renewcommand{\thesisdedication}{\large To Compute}
 \thesisdedicationpage
 
 \mastersthesis
@@ -63,27 +67,27 @@
 
 \chapter{Introduction}
 \label{ch:intro}
-\input{chapters/ch1_intro_quantum.tex}
 
 %--------------------------------------------------------
 
-\chapter{Chapter Name}
-\label{ch:chap2}
-\input{chapters/ch2_intro_rl.tex}
+\chapter{Background in Quantum Computation and Reinforcement Learning}
+\label{ch:background}
+\input{chapters/intro_basics.tex}
 
 %--------------------------------------------------------
 
-\chapter{Chapter Name}
-\label{ch:chap3}
-\input{chapters/ch3_qubit_routing.tex}
+\chapter{qRoute: Qubit Routing using Graph Neural Network aided Monte Carlo Tree Search}
+\label{ch:qroute}
+\input{chapters/qubit_routing.tex}
 
 %--------------------------------------------------------
 
-\chapter{Chapter Name}
-\label{ch:chap4}
-\input{chapters/ch4_qml_qleet.tex}
+\chapter{qLEET: Visualizing Loss Landscapes, Expressibility, Entangling power and Training Trajectories for Parameterized Quantum Circuits}
+\label{ch:qleet}
+\input{chapters/qml_qleet.tex}
 
 %--------------------------------------------------------
+
 \chapter{Conclusions}
 \label{ch:conc}
 \input{sections/conclusion.tex}
@@ -104,6 +108,6 @@
 
 \bibliographystyle{style/latex8}
 %\bibliography{References,Introduction/References} % To include one or more reference.bib files
-\bibliography{bibliography/main} 
+\bibliography{bibliography/main,bibliography/qroute,bibliography/qleet,bibliography/rlreview} 
 
 \end{document}

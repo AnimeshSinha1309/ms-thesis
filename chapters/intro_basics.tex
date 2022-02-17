@@ -1,0 +1,120 @@
+\section{Quantum Computation}
+
+\subsection{Qubits and Quantum Computation Model}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/quantum/bloch_sphere.png}
+    \caption{Bloch Sphere}
+\end{figure}
+
+
+\section{Reinforcement Learning}
+
+\subsection{What is Reinforcement Learning}
+
+Machine Learning, and all associated sub-disciplines are greatly motivated by the goal of achieving artificial general intelligence, that is being able to mimic the human mind and even surpass it's capacity to percieve, compute and actuate. The human mind deals with a veritable variety of problems differing greatly in their phrasing, in the solutions they admit, etc. Of this host of problem types, 
+
+Deep Learning is an extremely powerful and popular method which uses parameterized function approximators (aka. neural networks) to learn arbitrary functions directly from examples. We typically learn functions which take as input numerical data and associated structure (e.g. graphs) and produce one or many continuous-value outputs (regression) or discrete-value outputs (classification). This has been employed with great success in computational chemistry, for instance on predicting properties of molecules like solubility, smell, energy, etc. % Come up with more examples
+
+Despite all their predictive power, these methods are limited in the set of problems they can solve. One limitation is our inability to provide a large number of labelled examples since running laboratory experiments or expensive in-silico simulations are often too time and resource consuming. Another issue is that the output may not be a simple function of it's inputs, for instance when predicting molecular coordinates from molecular graphs, our outputs depend greatly on each other the position of one atom affects that of all others, and therefore a single step function cannot solve such a problem, an iterative approach to optimize these coordinates is required. In such cases where a problem is solved in many steps, there is no notion of the correct result after a single step, we can only score if the final result produced by the composite of steps. All these problems necessitate a machine learning method which can produce outputs over several timesteps, and be able to reason about the correctness of it's outputs based on rewards it may obtain at a different time in our process. This method is Reinforcement Learning. \cite{rl-intro-sutton-barto}
+
+
+\subsubsection{Markov Decision Processes}
+
+% What is environment, state, action
+
+A Markov Decision Processes is any real or simulated process going on in time where each each decision follows the Markovian Property, i.e, any future state transitions or rewards are conditionally independent of the past states and actions given the present state the environment is in.
+
+A Markov Decision Process (MDP) can be represented as a tuple $\braket{S, A, T_a(s, s^\prime), R_a(s, s^\prime)}$, where $S$ is the set of all states, $A$ is the set of all actions available from any given state, $T_a(s, s^\prime)$ is the transition model which represents the probability of going from a starting state $s$ to a next state $s^\prime$ given that the action $a$ was taken, and $R_a(s s^\prime)$ is the reward obtained when this transition is realized.
+
+Reinforcement Learning is a method of solving Markov Decision Processes. For our problem to be solved by RL, we need to ensure that our formulation is Markovian, i.e. our state has enough information to, given the action, predict the probability of the next state and the associated reward.
+
+\subsubsection{Value Function and Policy Function}
+
+At every point in time, our agent has access to the state gets to choose an action, for which it gets a reward and the state of the simulation is updated. 
+This process continues indefinitely until a terminal state is reached, i.e. one where no further progress needs to be made and no future rewards can be collected. This entire trajectory of states and actions together comprises an episode.
+
+The agent maintains a function which is called it's \textbf{policy function} $\pi(s, a)$, which given the current state gives the probability of each action it can take from that state. Our agent is allowed to be stochastic for various practical and theoretical reasons, so the probability for more than one action in a given state is allowed to be non-zero. This is the function that we shall attempt to optimize while learning from our environment.
+
+While acting according to any policy function, we can associate which each state what we call the \textbf{value function} $V_{\pi}(s)$, which represents the expected sum of rewards till the end of the episode obtainable by following the policy. The optimal policy function $\pi$ is that which leads to the maximum value function for the starting state.
+
+Value function of one state can be written in terms of that of others, and to compute the values we can try to optimize this over all states.
+\begin{equation}
+    V(s) = \sum_{a \in A} \pi(s, a) \sum_{s^\prime} T_a(s, s^\prime) (V(s^\prime) + R_a(s, s^\prime))
+\end{equation}
+
+Instead of associated a value with each state, we can associate it with a state-action pair. This function is called the Q-function and it carries the same information as the value function.
+\begin{eqnarray}\label{eqn:defn-q-v-fn}
+    Q(s, a) &=& \sum_{s^\prime} T_a(s, s^\prime) \bigg(R(s, s^\prime) + V(s^\prime) \bigg)\\
+            &=& \sum_{s^\prime} T_a(s, s^\prime) \bigg(R(s, s^\prime) + \sum_{a \in A} \pi(s^\prime, a) Q(s^\prime, a)\bigg)
+\end{eqnarray}
+
+\subsection{Reinforcement Learning Algorithms}
+
+In the following sections, we shall see three kinds of models:
+\begin{itemize}
+    \item Value Function Optimizers
+    \item Policy Function Optimizers
+    \item Actor-Critic Systems
+    \item Planning based Reinforcement Learning
+\end{itemize}
+
+
+\subsubsection{Deep Q-Networks}
+
+The first class of models attempt to approximate the value function. Assuming that our policy function will be that which is optimal, and assuming that our actions are deterministic (i.e. transition probabilities are 1 for the state we result in after an action and 0 otherwise), we can rewrite equation \ref{eqn:defn-q-fn} as:
+\begin{eqnarray}\label{eqn:defn-q-fn}
+    Q(s, a) \leftarrow R(s, s^\prime) + \max_{a \in A} Q(s^\prime, a)
+\end{eqnarray}
+
+For almost all problems in the real world, the state space is too large to maintain explicitly. Therefore we use a parameterized function $Q_{\theta}$, typically a neural network, to approximate the q-value from any given state-action pair.
+
+The parameters $\theta$ can be updating using gradient based methods. The update operation in equation \ref{eqn:q-update} is 
+\begin{equation}
+    \label{eqn:q-update}
+    \begin{split}
+        \theta_{k+1} = \theta_k - \alpha \nabla_\theta \Bigg[\frac{1}{2} \bigg(Q_\theta(s, a) - \Big(R(s, a, s^\prime) + \gamma \max_{a^\prime} Q_{\theta_k}(s^\prime, a^\prime)  \Big) \bigg) \Bigg] \Bigg\vert_{\theta_k}
+    \end{split}
+\end{equation}
+
+Several improvements to the training efficiency and stability to the DQN algorithm have been made, a few examples are the Double DQN by \cite{double-dqn}. These set of improvements put together have been analyzed by \cite{rainbow-dqn} under the name Rainbow DQN.
+
+\subsubsection{Policy Function Approximators}
+
+The policy function $\pi_\theta(s, a)$ gives the probability of each action given the state. In value function methods, we computed the policy by finding the action with the maximum expected value and assigning it a probability of 1 and other actions 0 for each state. When learning the policy directly, we use a stochastic policy instead, which makes the choice of actions smooth and optimizable.
+
+\paragraph{Reasons to use policy gradients:}
+\begin{enumerate}
+    \item Learning value function may be much harder than learning the relative quality of actions, e.g. given the task of designing molecules with high solubility, and a procedure which keeps adding bonds iteratively, it can be very hard to predict the expected solubility of the molecule formed at the end of trajectories (value function), while predicting that adding a highly polar bond is more beneficial than adding non-polar ones (policy function).
+    \item We might want to obtain a policy which is inherently stochastic, where policy based methods are the better choice. One example is when designing molecules with certain properties, we want a stochastic policy so that we can sample different molecules that optimize on the target property and then rank them based on synthetic ease or the such.
+    \item Many a times, the action space is continuous or intractably large, and maximizing value over all actions is not feasible. Here we can only use policy based methods. Geometry optimization is one example, where the action is predicting the molecular coordinates of a single atom, which leads to a un-countably infinite sized action space.
+\end{enumerate}
+
+\paragraph{Method:}
+To optimize our policy, we sample trajectories from our policy and increase the probability of actions in trajectories which high reward get increase, and those with lower reward decrease.
+
+The utility of our policy is the expected reward under trajectories sampled from this policy, this is the quantity we wish to maximize over the parameters $\theta$. To perform this maximization, we compute $\nabla_\theta U(\theta)$ and update the parameter vector as $\theta \leftarrow \theta + \epsilon \nabla_\theta U(\theta)$. The gradient only depends on the gradient of the log of our policy function scaled by the rewards obtained along the trajectory, and very importantly does not depend on the true transition model. Equation \ref{eqn:policy-grad} follows from a mathematically involved derivation done in \cite{}.
+
+\begin{equation}\label{eqn:policy-grad}
+    \nabla_\theta U(\theta) \leftarrow \frac{1}{m} \sum_{i=1}^{m} \sum_{t=0}^{H-1} \nabla_\theta \log \pi_\theta (u_t^{(i)}|s_t^{(i)}) \Bigg(\sum_{k=t}^{H-1} R(s_k^{(i)}, u_k^{(i)}) - b(s_t^{(i)})\Bigg)
+\end{equation}
+
+\paragraph{Other Nuances:} Despite having the gradient that we need to update along, it's unclear what learning rate we should use to perform said update. Unlike in deep learning where the next iteration would correct if we overstep along the gradient, an overstep in our policy can lead to evaluation over an incorrect policy and can essentially wipe out all we have learnt till now. Trust Region policy optimizations (TRPO) by \cite{trpo} and Proximal Policy Optimizations (PPO) by \cite{ppo} are methods that address this. Furthermore, to increase sample efficiency, Direct Deterministic Policy Gradients (DDPG) by \cite{ddpg} and Soft Actor critic (SAC) \cite{sac} are used. These methods have not seen great application in chemistry but hold great promise given their popularity in other reinforcement learning sub-domains.
+
+\subsubsection{Actor Critic Methods}
+
+In equation \ref{eqn:policy-grad}, we are free to subtract a baseline value $b(s_t^{(i)})$ from the summed up rewards for each action, however this baseline should be independent of the action and can only depend on the state. Subtraction of this baseline leads to lower variance estimates in the value of actions. The network for each action now has to predict a quantity called the advantage, which represents the relative value of the actions and abstracts out the value of the state.
+\begin{equation}\label{eqn:advantage}
+    A(s, a) = Q(s, a) - V(s)
+\end{equation}
+
+This is implemented in practice using two networks, an actor network, which estimates the values of the actions, and a critic network, that estimates the resultant values of the states which we subtract as baseline from the rewards. These methods are often known to be stabler than their pure policy-gradient counterparts.
+
+There are several variants on how the critic network and the explicit rollout together lead to the estimate of the value for each state, which have been discussed in detail by \cite{actor-critic-a2c, actor-critic-a3c, actor-critic-gae}
+
+\subsubsection{Monte Carlo Tree Search}
+
+When the transition model (next state and reward given action) is known, we can plan explicitly using a tree search. Since tree would grow combinatorially big (molecule generation via such means would have every possible molecule and it's substructure as a node in the tree), we use reinforcement learning to find out the most promising nodes. Monte Carlo Tree Search is one such method, which has gained prominence due to it's use in AlphaGo by \cite{mcts-alphago} to play Go and in AlphaZero by \cite{mcts-alphazero} to play Chess, Go, and other games with no human supervision during training. 
+
+MCTS has been used in extensively chemistry wherever the exact transition model is known, in problems like Molecule Generation and Reaction path prediction. 

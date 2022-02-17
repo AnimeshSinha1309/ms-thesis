@@ -1,0 +1,48 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
+\BOOKMARK [0][-]{chapter.2}{Background in Quantum Computation and Reinforcement Learning}{}% 2
+\BOOKMARK [1][-]{section.2.1}{Quantum Computation}{chapter.2}% 3
+\BOOKMARK [2][-]{subsection.2.1.1}{Qubits and Quantum Computation Model}{section.2.1}% 4
+\BOOKMARK [1][-]{section.2.2}{Reinforcement Learning}{chapter.2}% 5
+\BOOKMARK [2][-]{subsection.2.2.1}{What is Reinforcement Learning}{section.2.2}% 6
+\BOOKMARK [3][-]{subsubsection.2.2.1.1}{Markov Decision Processes}{subsection.2.2.1}% 7
+\BOOKMARK [3][-]{subsubsection.2.2.1.2}{Value Function and Policy Function}{subsection.2.2.1}% 8
+\BOOKMARK [2][-]{subsection.2.2.2}{Reinforcement Learning Algorithms}{section.2.2}% 9
+\BOOKMARK [3][-]{subsubsection.2.2.2.1}{Deep Q-Networks}{subsection.2.2.2}% 10
+\BOOKMARK [3][-]{subsubsection.2.2.2.2}{Policy Function Approximators}{subsection.2.2.2}% 11
+\BOOKMARK [4][-]{paragraph.2.2.2.2.1}{Reasons to use policy gradients:}{subsubsection.2.2.2.2}% 12
+\BOOKMARK [4][-]{paragraph.2.2.2.2.2}{Method:}{subsubsection.2.2.2.2}% 13
+\BOOKMARK [4][-]{paragraph.2.2.2.2.3}{Other Nuances:}{subsubsection.2.2.2.2}% 14
+\BOOKMARK [3][-]{subsubsection.2.2.2.3}{Actor Critic Methods}{subsection.2.2.2}% 15
+\BOOKMARK [3][-]{subsubsection.2.2.2.4}{Monte Carlo Tree Search}{subsection.2.2.2}% 16
+\BOOKMARK [0][-]{chapter.3}{qRoute: Qubit Routing using Graph Neural Network aided Monte Carlo Tree Search}{}% 17
+\BOOKMARK [1][-]{section.3.1}{Abstract}{chapter.3}% 18
+\BOOKMARK [1][-]{section.3.2}{Introduction}{chapter.3}% 19
+\BOOKMARK [1][-]{section.3.3}{Qubit Routing}{chapter.3}% 20
+\BOOKMARK [2][-]{subsection.3.3.1}{Describing the Problem}{section.3.3}% 21
+\BOOKMARK [2][-]{subsection.3.3.2}{Related Work}{section.3.3}% 22
+\BOOKMARK [2][-]{subsection.3.3.3}{Our Contributions}{section.3.3}% 23
+\BOOKMARK [1][-]{section.3.4}{Method}{chapter.3}% 24
+\BOOKMARK [2][-]{subsection.3.4.1}{ State and Action Space}{section.3.4}% 25
+\BOOKMARK [2][-]{subsection.3.4.2}{ Monte Carlo Tree Search}{section.3.4}% 26
+\BOOKMARK [2][-]{subsection.3.4.3}{Neural Network Architecture}{section.3.4}% 27
+\BOOKMARK [1][-]{section.3.5}{Results}{chapter.3}% 28
+\BOOKMARK [2][-]{subsection.3.5.1}{Random Test Circuits}{section.3.5}% 29
+\BOOKMARK [2][-]{subsection.3.5.2}{Small Realistic Circuits}{section.3.5}% 30
+\BOOKMARK [2][-]{subsection.3.5.3}{Large Realistic Circuit}{section.3.5}% 31
+\BOOKMARK [1][-]{section.3.6}{Discussion and Conclusion}{chapter.3}% 32
+\BOOKMARK [0][-]{chapter.4}{qLEET: Visualizing Loss Landscapes, Expressibility, Entangling power and Training Trajectories for Parameterized Quantum Circuits}{}% 33
+\BOOKMARK [1][-]{section.4.1}{Abstract}{chapter.4}% 34
+\BOOKMARK [1][-]{section.4.2}{Introduction}{chapter.4}% 35
+\BOOKMARK [1][-]{section.4.3}{Overview}{chapter.4}% 36
+\BOOKMARK [1][-]{section.4.4}{Trainability of PQCs}{chapter.4}% 37
+\BOOKMARK [2][-]{subsection.4.4.1}{Loss Landscape}{section.4.4}% 38
+\BOOKMARK [2][-]{subsection.4.4.2}{Training Trajectory}{section.4.4}% 39
+\BOOKMARK [2][-]{subsection.4.4.3}{Expressibility}{section.4.4}% 40
+\BOOKMARK [2][-]{subsection.4.4.4}{Entangling Capability}{section.4.4}% 41
+\BOOKMARK [2][-]{subsection.4.4.5}{Entanglement Spectrum}{section.4.4}% 42
+\BOOKMARK [1][-]{section.4.5}{Challenges for Variational Quantum Computation}{chapter.4}% 43
+\BOOKMARK [2][-]{subsection.4.5.1}{Barren Plateaus}{section.4.5}% 44
+\BOOKMARK [2][-]{subsection.4.5.2}{Reachability}{section.4.5}% 45
+\BOOKMARK [1][-]{section.4.6}{Conclusion}{chapter.4}% 46
+\BOOKMARK [0][-]{chapter.5}{Conclusions}{}% 47
+\BOOKMARK [0][-]{chapter*.21}{Bibliography}{}% 48
