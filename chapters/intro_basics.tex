@@ -1,12 +1,38 @@
 \section{Quantum Computation}
 
+
 \subsection{Qubits and Quantum Computation Model}
 
-\begin{figure}
+Quantum Computers store information as quantum bits, or qubits. These qubits can be evolved by operating on them with unitary operators, also called gates. The gate model of computation is rather familiar, following is a diagramatic illustration of the same:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/quantum/quantum_circuit_example.png}
+    \caption{The image shows the parts of a typical quantum circuit, with 3 qubits represented by the wires and a set of gates applied to them, followed by measurement of those qubits.}
+    \label{fig:quantum-circuit-example}
+\end{figure}
+
+
+A classical bit can be either 0 or 1. However, a qubit can live in any state inbetween 0 or 1, which is understood as being in a weighted superposition of the 0 and 1 states. So the state of a qubit 
+\begin{equation}
+    \ket{\psi} = \alpha \ket{0} + \beta \ket{1} = \begin{bmatrix}\alpha \\ \beta\end{bmatrix} \;\;\text{such that }\alpha^2 + \beta^2 = 1 \text{ and } \alpha, \beta \in \mathbb{C}
+\end{equation}
+where the normalization of probabilities forces. However this state of the qubit is not accessible to us, and we can only measure the qubit probabilistically, with probability of being $\ket{0}$ being $\alpha^2$ and that of $\ket{1}$ being $\beta^2$.
+
+Each qubit, in addition to the superposition it's in also has a phase term, which is represented on the bloch-sphere \ref{fig:bloch-sphere} on the x-y plane. The phase doesn't affect the immediate measurement of the qubit, but can affect the resultant phase and superposition when some unitary operation is applied on the qubit.
+
+Qubits show the property of entanglement. This means that 
+
+\begin{figure}[h]
     \centering
     \includegraphics[width=0.5\linewidth]{figures/quantum/bloch_sphere.png}
-    \caption{Bloch Sphere}
+    \caption{Bloch Sphere represents the state of a qubit $\ket{\psi}$. The pure states $\ket{0}$ and $\ket{1}$ are the vectors along the z-axis on the opposite poles. The angle along the x-y plane represents the phase of the qubits.}
+    \label{fig:bloch-sphere}
 \end{figure}
+
+
+\subsection{Variational Quantum Algorithms}
+
 
 
 \section{Reinforcement Learning}
@@ -118,3 +144,11 @@ There are several variants on how the critic network and the explicit rollout to
 When the transition model (next state and reward given action) is known, we can plan explicitly using a tree search. Since tree would grow combinatorially big (molecule generation via such means would have every possible molecule and it's substructure as a node in the tree), we use reinforcement learning to find out the most promising nodes. Monte Carlo Tree Search is one such method, which has gained prominence due to it's use in AlphaGo by \cite{mcts-alphago} to play Go and in AlphaZero by \cite{mcts-alphazero} to play Chess, Go, and other games with no human supervision during training. 
 
 MCTS has been used in extensively chemistry wherever the exact transition model is known, in problems like Molecule Generation and Reaction path prediction. 
+
+
+
+% Progress in computational techniques and speed is intimately tied to the furtherance of scientific inquiry. Over the past many decades, we have built computers that can simulate systems better and search for courses of action to modify the evolution of these systems to human advantage. In this endeavor, the manifold increase in computational speed and memory has helped us to date, but now that computational components have reached the size of atoms, we seem to be on the verge of meeting a hard limit. Therefore, we have started to look towards other paradigms to develop computers more suited to performing simulations of nature. Quantum computing, the idea of using the fundamental quantum nature of the universe to simulate itself but in much greater generality, has held the most promise.
+
+% Richard Feynman said: “Nature isn't classical, dammit, and if you want to make a simulation of nature, you'd better make it quantum mechanical, and by golly it's a wonderful problem, because it doesn't look so easy.” \cite{feynman-quantum-simulating-physics}
+
+% Though Quantum Computers are realizable even today, the devices in the present day are said to be a part of the Noisy Intermediate-Scale Quantum era (NISQ). Presently, the quantum bits and operations are noisy and lack the reliability to perform any computation infeasible on classical computers of the day.
