@@ -14,11 +14,13 @@
 \usepackage{graphicx}
 \usepackage{multirow}
 \usepackage{algorithm2e}
-
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{braket}
 \usepackage{hyperref}
+
+\usepackage{tikz}
+\usetikzlibrary{quantikz}
 
 \long\def\symbolfootnote[#1]#2{\begingroup%
 \def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
@@ -82,6 +84,12 @@
 
 %--------------------------------------------------------
 
+\chapter{Quantum Algorithms}
+\label{ch:algos}
+\input{chapters/quantum_algorithms.tex}
+
+%--------------------------------------------------------
+
 \chapter{qLEET: Visualizing Loss Landscapes, Expressibility, Entangling power and Training Trajectories for Parameterized Quantum Circuits}
 \label{ch:qleet}
 \input{chapters/qml_qleet.tex}
@@ -108,6 +116,6 @@
 
 \bibliographystyle{style/latex8}
 %\bibliography{References,Introduction/References} % To include one or more reference.bib files
-\bibliography{bibliography/main,bibliography/qroute,bibliography/qleet,bibliography/rlreview} 
+\bibliography{bibliography/main,bibliography/qroute,bibliography/qleet,bibliography/rlreview,bibliography/qalgos} 
 
 \end{document}

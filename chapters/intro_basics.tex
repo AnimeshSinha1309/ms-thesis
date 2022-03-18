@@ -19,7 +19,7 @@ A classical bit can be either 0 or 1. However, a qubit can live in any state inb
 \end{equation}
 where the normalization of probabilities forces. However this state of the qubit is not accessible to us, and we can only measure the qubit probabilistically, with probability of being $\ket{0}$ being $\alpha^2$ and that of $\ket{1}$ being $\beta^2$.
 
-Each qubit, in addition to the superposition it's in also has a phase term, which is represented on the bloch-sphere \ref{fig:bloch-sphere} on the x-y plane. The phase doesn't affect the immediate measurement of the qubit, but can affect the resultant phase and superposition when some unitary operation is applied on the qubit.
+Each qubit, in addition to the superposition it is in also has a phase term, which is represented on the bloch-sphere \ref{fig:bloch-sphere} on the x-y plane. The phase doesn't affect the immediate measurement of the qubit, but can affect the resultant phase and superposition when some unitary operation is applied on the qubit.
 
 Qubits show the property of entanglement. This means that 
 
@@ -31,19 +31,26 @@ Qubits show the property of entanglement. This means that
 \end{figure}
 
 
-\subsection{Variational Quantum Algorithms}
+\subsection{Unitaries, Gates, and Entanglement}
 
+\begin{quantikz}
+    \lstick{\ket{0}} & \phase{\alpha} & \gate{H}
+    & \phase{\beta} & \gate{H} & \phase{\gamma}
+    & \rstick{Arbitrary\\pure state}\qw
+\end{quantikz}
+
+\subsection{Density Matrices and Noise}
 
 
 \section{Reinforcement Learning}
 
 \subsection{What is Reinforcement Learning}
 
-Machine Learning, and all associated sub-disciplines are greatly motivated by the goal of achieving artificial general intelligence, that is being able to mimic the human mind and even surpass it's capacity to percieve, compute and actuate. The human mind deals with a veritable variety of problems differing greatly in their phrasing, in the solutions they admit, etc. Of this host of problem types, 
+Machine Learning and all associated sub-disciplines are motivated by the goal of achieving artificial general intelligence, that is being able to mimic the human mind and even surpass it's capacity to percieve, compute and actuate. The human mind deals with a veritable variety of problems differing greatly in their phrasing, in the solutions they admit, etc. Of this host of problem types, 
 
-Deep Learning is an extremely powerful and popular method which uses parameterized function approximators (aka. neural networks) to learn arbitrary functions directly from examples. We typically learn functions which take as input numerical data and associated structure (e.g. graphs) and produce one or many continuous-value outputs (regression) or discrete-value outputs (classification). This has been employed with great success in computational chemistry, for instance on predicting properties of molecules like solubility, smell, energy, etc. % Come up with more examples
+Deep Learning is an extremely powerful and popular one of these methods, which uses parameterized function approximators (aka. neural networks) to learn arbitrary functions directly from examples. We typically learn functions which take as input numerical data and associated structure (e.g. graphs) and produce one or many continuous-valued outputs (regression) or discrete-value outputs (classification). This has been employed with great success in computational chemistry, for instance, on predicting properties of molecules like solubility, smell, energy, etc. % Come up with more examples
 
-Despite all their predictive power, these methods are limited in the set of problems they can solve. One limitation is our inability to provide a large number of labelled examples since running laboratory experiments or expensive in-silico simulations are often too time and resource consuming. Another issue is that the output may not be a simple function of it's inputs, for instance when predicting molecular coordinates from molecular graphs, our outputs depend greatly on each other the position of one atom affects that of all others, and therefore a single step function cannot solve such a problem, an iterative approach to optimize these coordinates is required. In such cases where a problem is solved in many steps, there is no notion of the correct result after a single step, we can only score if the final result produced by the composite of steps. All these problems necessitate a machine learning method which can produce outputs over several timesteps, and be able to reason about the correctness of it's outputs based on rewards it may obtain at a different time in our process. This method is Reinforcement Learning. \cite{rl-intro-sutton-barto}
+Despite all their predictive power, these methods are limited in the set of problems they can solve. One limitation is our inability to provide a large number of labeled examples since running laboratory experiments or expensive in-silico simulations are often too time and resource-consuming. Another issue is that the output may not be a simple function of its inputs. For instance, when predicting molecular coordinates from molecular graphs, our outputs depend greatly on each other the position of one atom affects that of all others, and therefore a single step function cannot solve such a problem, an iterative approach to optimize these coordinates is required. In such cases where a problem is solved in many steps, there is no notion of the correct result after a single step, we can only score if the final result is produced by the composite of steps. All these problems necessitate a machine learning method which can produce outputs over several timesteps, and be able to reason about the correctness of its outputs based on rewards it may obtain at a different time in our process. This method is Reinforcement Learning. \cite{rl-intro-sutton-barto}
 
 
 \subsubsection{Markov Decision Processes}
@@ -65,12 +72,13 @@ The agent maintains a function which is called it's \textbf{policy function} $\p
 
 While acting according to any policy function, we can associate which each state what we call the \textbf{value function} $V_{\pi}(s)$, which represents the expected sum of rewards till the end of the episode obtainable by following the policy. The optimal policy function $\pi$ is that which leads to the maximum value function for the starting state.
 
-Value function of one state can be written in terms of that of others, and to compute the values we can try to optimize this over all states.
+Value-function of one state can be written in terms of that of others, and to compute these values over all the states we need to iteratively apply our updates.
+
 \begin{equation}
     V(s) = \sum_{a \in A} \pi(s, a) \sum_{s^\prime} T_a(s, s^\prime) (V(s^\prime) + R_a(s, s^\prime))
 \end{equation}
 
-Instead of associated a value with each state, we can associate it with a state-action pair. This function is called the Q-function and it carries the same information as the value function.
+Instead of associating a value with each state, we can associate it with a state-action pair. This function is called the Q-function, and it carries equivalent information to the value function.
 \begin{eqnarray}\label{eqn:defn-q-v-fn}
     Q(s, a) &=& \sum_{s^\prime} T_a(s, s^\prime) \bigg(R(s, s^\prime) + V(s^\prime) \bigg)\\
             &=& \sum_{s^\prime} T_a(s, s^\prime) \bigg(R(s, s^\prime) + \sum_{a \in A} \pi(s^\prime, a) Q(s^\prime, a)\bigg)
