@@ -16,11 +16,15 @@
 \usepackage{algorithm2e}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage{braket}
 \usepackage{hyperref}
+\usepackage{braket}
+\usepackage{float}
 
-\usepackage{tikz}
-\usetikzlibrary{quantikz}
+\usepackage{newfloat}
+\usepackage{listings}
+\usepackage{xtab}
+\usepackage{longtable}
+
 
 \long\def\symbolfootnote[#1]#2{\begingroup%
 \def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
@@ -65,10 +69,6 @@
 \tableofcontents
 \listoffigures
 \listoftables
-%--------------------------------------------------------
-
-\chapter{Introduction}
-\label{ch:intro}
 
 %--------------------------------------------------------
 
@@ -78,13 +78,18 @@
 
 %--------------------------------------------------------
 
+\chapter{Introduction}
+\label{ch:intro}
+
+%--------------------------------------------------------
+
 \chapter{qRoute: Qubit Routing using Graph Neural Network aided Monte Carlo Tree Search}
 \label{ch:qroute}
 \input{chapters/qubit_routing.tex}
 
 %--------------------------------------------------------
 
-\chapter{Quantum Algorithms}
+\chapter{Quantum Algorithms and Variational Methods}
 \label{ch:algos}
 \input{chapters/quantum_algorithms.tex}
 
@@ -101,21 +106,22 @@
 \input{sections/conclusion.tex}
 
 %--------------------------------------------------------
+
 %%% Optional appendix
-%\appendix
-%\chapter{}
-%\label{}
+\appendix
+\chapter{qRoute: Algorithm Details and Additional Results}
+\label{ch:appendix-qroute}
+\input{chapters/appendix_qroute.tex}
 
 %--------------------------------------------------------
 % Recommended 'Related Publication'
-\chapter*{Related Publications}
-\label{ch:relatedPubs}
-\input{sections/related_papers.tex}
+% \chapter*{Related Publications}
+% \label{ch:relatedPubs}
+% \input{sections/related_papers.tex}
 
 %--------------------------------------------------------
 
 \bibliographystyle{style/latex8}
-%\bibliography{References,Introduction/References} % To include one or more reference.bib files
 \bibliography{bibliography/main,bibliography/qroute,bibliography/qleet,bibliography/rlreview,bibliography/qalgos} 
 
 \end{document}
