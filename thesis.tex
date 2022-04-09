@@ -6,6 +6,7 @@
 \documentclass[11pt]{book}
 \usepackage{style/iiit_thesis}
 
+\usepackage{hyperref}
 \usepackage{times}
 \usepackage{epsfig}
 \usepackage{amsmath}
@@ -16,10 +17,8 @@
 \usepackage{algorithm2e}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage{hyperref}
 \usepackage{braket}
 \usepackage{float}
-
 \usepackage{newfloat}
 \usepackage{listings}
 \usepackage{xtab}
@@ -72,26 +71,21 @@
 
 %--------------------------------------------------------
 
-\chapter{Background in Quantum Computation and Reinforcement Learning}
-\label{ch:background}
-\input{chapters/intro_basics.tex}
+\chapter{Introduction}
+\label{ch:intro}
+\input{chapters/thesis_intro.tex}
 
 %--------------------------------------------------------
 
-\chapter{Introduction}
-\label{ch:intro}
+\chapter{Background in Quantum Computation and Reinforcement Learning}
+\label{ch:background}
+\input{chapters/background_qrl.tex}
 
 %--------------------------------------------------------
 
 \chapter{qRoute: Qubit Routing using Graph Neural Network aided Monte Carlo Tree Search}
 \label{ch:qroute}
 \input{chapters/qubit_routing.tex}
-
-%--------------------------------------------------------
-
-\chapter{Quantum Algorithms and Variational Methods}
-\label{ch:algos}
-\input{chapters/quantum_algorithms.tex}
 
 %--------------------------------------------------------
 
@@ -122,6 +116,12 @@
 %--------------------------------------------------------
 
 \bibliographystyle{style/latex8}
-\bibliography{bibliography/main,bibliography/qroute,bibliography/qleet,bibliography/rlreview,bibliography/qalgos} 
+\bibliography{
+    bibliography/main,
+    bibliography/qroute,
+    bibliography/qleet,
+    bibliography/rlreview,
+    bibliography/qalgos
+} 
 
 \end{document}

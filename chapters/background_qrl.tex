@@ -8,7 +8,7 @@ In this chapter, we introduce the basics of quantum computing and reinforcement 
 
 Quantum Computers store information as quantum bits, or qubits. These qubits can be evolved by operating on them with unitary operators, also called gates. The gate model of computation is rather familiar, following is a diagramatic illustration of the same:
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\linewidth]{figures/quantum/quantum_circuit_example.png}
     \caption{The image shows the parts of a typical quantum circuit, with 3 qubits represented by the wires and a set of gates applied to them, followed by measurement of those qubits.}
@@ -59,27 +59,33 @@ Much like unitary operations on state vectors, the application of unitaries on d
 \end{equation}
 
 
-\section{Quantum Algorithms on Error Corrected Computers}
+\section{Quantum Algorithms}
+\label{sec:quantum-algorithms}
 
-Superposition and Entanglement together provide quantum computers with natural parallel processing power. While full access to this parallelism gets bottlenecked at the measurement layer where we can sample only one of the many states in weighted superposition, it is conceivable that for many an algorithm, this parallelism can result in a processing speed-up. A near-term goal with Quantum Computers is to achieve quantum supremacy, which is to solve a problem (possibly one of no practical use) that no classical computer can solve in a feasible amount of time. \cite{quantum-complexity-survey}
+Superposition and Entanglement together provide quantum computers with natural parallel processing power. While full access to this parallelism gets bottlenecked at the measurement layer since we can sample only one of the many states in weighted superposition, it is conceivable that for many an algorithm, this parallelism can result in a processing speed-up. A near-term goal with Quantum Computers is to achieve quantum supremacy, which is to solve a problem (possibly one of no practical use) that no classical computer can solve in a feasible amount of time. \cite{quantum-complexity-survey}
+
+\begin{itemize}
+    \item Grover Like - Algorithms which utilize amplitude amplification to 
+    \item Shor's Like - Algorithms which 
+\end{itemize}
 
 
 \subsection{Grover's Search}
 
-Grover's search is one of the two most prominent quantum algorithms originally proposed by Grover in 1996 \cite{grover-search-original}, where it was used to solve the problem of searching in a list with no exploitable structure in sub-linear time. Since then, it has been the inspiration for many other algorithms, and many use it as a subroutine call, leading to a class of algorithms called amplitude amplification algorithms \cite{quantum-amplitude-amplification-algorithms}.
+Grover's search is an algorithm to search in a unordered list of size $n$ in $\sqrt{n}$ time proposed by Grover in 1996 \cite{grover-search-original}.
 
-\subsubsection{The Problem}
+Since then, it has been the inspiration for many other algorithms, and many use it as a subroutine call, leading to a class of algorithms called amplitude amplification algorithms \cite{quantum-amplitude-amplification-algorithms}.
 
-Grover attacks the problem of unstructured search, where we have a list of $n$ elements in an any permutation and we have an oracle which marks each of these elements $1$, which is one of the results of the search procedure we wished to find, or as $0$ which is for those elements which were not one of those elements. We are told that the oracle only returns a value of $1$ for some $m$ of those elements, where $m << n$.
+\paragraph*{The Problem:} Grover attacks the problem of unstructured search, where we have a list of $n$ elements in an any permutation and we have an oracle which marks each of these elements $1$, which is one of the results of the search procedure we wished to find, or as $0$ which is for those elements which were not one of those elements. We are told that the oracle only returns a value of $1$ for some $m$ of those elements, where $m << n$.
 
-\subsubsection{Overview of the algorithm}
+\paragraph*{Overview of the Algorithm:} Following is a brief explaination of how the Grover's algorithm operates:
 
-The Algorithm proceeds in two steps:
 \begin{enumerate}
     \item \textbf{Preparing the initial superposition of bitstrings:} The initial state should be the superposition of all elements in our search domain. Since these are the indices of the elements we are searching over, we can take this to be an equal superposition of all basis states, constructed by applying the hadamard gate over all qubits.
     \begin{equation}
-        \ket{x} = \frac{1}{\sqrt{n}} \sum_{i=1}^{n} \ket{b_i}
+        \ket{x} = \ket{s} = \frac{1}{\sqrt{n}} \sum_{i=1}^{n} \ket{b_i}
     \end{equation}
+
     \item \textbf{Application of a phase-kickback oracle:} For any input state $\ket{x}$, if it is a valid solution (i.e. $f(x) = 1$), then the oracle that bitstring with a negative phase. If $\ket{x}$ is not a basis state but rather is a superposition of states, then the oracle operates on each basis component of the state independently as shown in equation. \ref{eqn:grover-oracle}
     \begin{equation}\label{eqn:grover-oracle}
         \mathcal{O} \big(\ket{x} \big) = \mathcal{O}\bigg(\sum_i w_i(x) \ket{b_i} \bigg) = \sum_i w_i(x) \begin{cases}
@@ -87,7 +93,12 @@ The Algorithm proceeds in two steps:
             \ket{b_i} & \text{if } f(b_i) = 0
         \end{cases}
     \end{equation}
-    \item \textbf{Performing a reflection around the average amplitude:} 
+    
+    \item \textbf{Performing a reflection around the average amplitude:} Following the application of the oracle, we can apply a reflection around the mean amplitude of the superposition of all solutions via an application of the Diffuser operator.
+    \begin{equation}
+        \mathcal{D} \big(\ket{x} \big) = \big( 2 \ket{s}\bra{s} - 1 \big) \ket{x}
+    \end{equation}
+    Given that there are small number of solutions 
     \item \textbf{Repeat 2 steps above and measure the final state:} We iteratively apply the oracle and the diffuser circuit to take the present superposition closer and closer to the goal state. Measurement of this state along the computational basis gives us a bitstring, which with some constant probability is the solution $x$ such that $f(x) = 1$.
 \end{enumerate}
 
@@ -95,9 +106,13 @@ The Algorithm proceeds in two steps:
 
 
 
-\section{Hybrid Quantum Classical Algorithms on Near Term Computers}
+\section{Variational Circuits}
+\label{sec:variational-circuits}
 
-The algorithms discussed in the section above are not immune to the noise that plagues present day systems, and cannot be feasible run on the quantum computers of today. 
+In the previous section we have discussed purely quantum algorithms which do posess an advantage over their presently classical competitors, but need fault-tolerant quantum computers with a large number of qubits to be executed.
+
+\subsection{Quantum Approximate Optimization Algorithm}
+\label{sec:variational-circuits-qaoa}
 
 
 \section{Reinforcement Learning}
