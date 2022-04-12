@@ -1,5 +1,10 @@
-In this chapter, we introduce the basics of quantum computing and reinforcement learning. We start with discussing the basics of the mathematical and computational framework around quantum circuit design. We then describe some algorithms that give quantum computers their advantage.
+In this chapter, we introduce the basics of quantum computing and reinforcement learning the form the backdrop the work in the remainder of the thesis.
 
+We start with a brief introduction of the quantum computation model, it's mathematical and geometric formalism, and introduce the circuit model of computation. 
+
+Next, we start a discussion on Quantum Algorithms, starting with pure quantum algorithms like Grover's, Shor's, and Hamiltonian simulation and moving on to Variational Methods like QAOA (Quantum Approximate Optimization Algorithm) and VQE (Variational Quantum Eigensolver). The compilation and visualization of these algorithms form the basis of the work presented in this thesis, and both our algorithms have been tested extensively on some subset of these circuits. We also show that there are a small number of such subroutines that have currently been discovered in quantum algorithmic theory, and these subroutines are often and repeatedly used, motivating the value of performing routing as close to optimally as possible on these circuits (Routing results on these algorithmic benchmarks as setup by IBM are listed in \ref{ch:appendix-qroute}). The QAOA algorithm for max-cut is also our test-bed for analyzing and visualizing the learning properties of these variational circuits.
+
+Finally, we move to a didactic introduction to reinforcement learning the different settings like Value-based, Policy-based, etc. We add some mathematical/algorithmic details to those settings and algorithms which are relevant to our work, like Actor Critic methods, Monte Carlo Tree Search, etc.
 
 \section{Quantum Computation}
 
@@ -24,7 +29,7 @@ where the normalization of probabilities forces. However this state of the qubit
 
 Each qubit, in addition to the superposition it is in also has a phase term, which is represented on the bloch-sphere \ref{fig:bloch-sphere} on the x-y plane. The phase doesn't affect the immediate measurement of the qubit, but can affect the resultant phase and superposition when some unitary operation is applied on the qubit.
 
-\begin{figure}[H]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.5\linewidth]{figures/quantum/bloch_sphere.png}
     \caption{Bloch Sphere represents the state of a qubit $\ket{\psi}$. The pure states $\ket{0}$ and $\ket{1}$ are the vectors along the z-axis on the opposite poles. The angle along the x-y plane represents the phase of the qubits.}
@@ -37,7 +42,7 @@ Each qubit, in addition to the superposition it is in also has a phase term, whi
 
 The state of a system of qubits can be modified by the application of unitary gates on those qubits.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\linewidth]{figures/quantum/quantum_logic_gates.png}
     \caption{Popular logic gates along with their in-circuit representations and corresponding unitary matrices.}
@@ -63,24 +68,24 @@ Much like unitary operations on state vectors, the application of unitaries on d
 \section{Quantum Algorithms}
 \label{sec:quantum-algorithms}
 
+\subsection{Purely Quantum Algorithms}
+
 Superposition and Entanglement together provide quantum computers with natural parallel processing power. While full access to this parallelism gets bottlenecked at the measurement layer since we can sample only one of the many states in weighted superposition, it is conceivable that for many an algorithm, this parallelism can result in a processing speed-up. A near-term goal with Quantum Computers is to achieve quantum supremacy, which is to solve a problem (possibly one of no practical use) that no classical computer can solve in a feasible amount of time. \cite{quantum-complexity-survey}
 
 \begin{itemize}
-    \item Grover Like - If a quantum algorithm succeeds with probability $p$, classically $1/p$ iterations are needed to succeed with constant certainty, whereas in the quantum setting using a technique called amplitude amplification, we can do the same in $O(1/\sqrt{p})$ iterations.
+    \item Grover Like - If a quantum algorithm succeeds with probability $p$, classically $1/p$ iterations are needed to succeed with constant certainty, whereas in the quantum setting using a technique called amplitude amplification, we can do the same in $O(1/\sqrt{p})$ iterations. These algoritms give a quadratic speedup over the classical.
     \item Shor's Like - Algorithms which
-    \item Hamiltonian Simulation - For several systems like the Quantum Harmonic Oscillator, or  
+    \item Hamiltonian Simulation - Physical systems can be described by some hamiltonian, the eigenvalues of which are the achievable energy values of the system. 
 \end{itemize}
 
 
-\subsection{Grover's Search}
+\subsubsection{Grover's Search}
 
 Grover's search is an algorithm to search in a unordered list of size $n$ in $\sqrt{n}$ time proposed by Grover in 1996 \cite{grover-search-original}.
 
-Since then, it has been the inspiration for many other algorithms, and many use it as a subroutine call, leading to a class of algorithms called amplitude amplification algorithms \cite{quantum-amplitude-amplification-algorithms}.
+\paragraph*{The Problem}: Grover attacks the problem of unstructured search, where we have a list of $n$ elements in an any permutation and we have an oracle which marks each of these elements $1$, which is one of the results of the search procedure we wished to find, or as $0$ which is for those elements which were not one of those elements. We are told that the oracle only returns a value of $1$ for some $m$ of those elements, where $m << n$.
 
-\paragraph*{The Problem:} Grover attacks the problem of unstructured search, where we have a list of $n$ elements in an any permutation and we have an oracle which marks each of these elements $1$, which is one of the results of the search procedure we wished to find, or as $0$ which is for those elements which were not one of those elements. We are told that the oracle only returns a value of $1$ for some $m$ of those elements, where $m << n$.
-
-\paragraph*{Overview of the Algorithm:} Following is a brief explaination of how the Grover's algorithm operates:
+\paragraph*{Overview of the Algorithm}: Following is a brief explaination of how the Grover's algorithm operates:
 
 \begin{enumerate}
     \item \textbf{Preparing the initial superposition of bitstrings:} The initial state should be the superposition of all elements in our search domain. Since these are the indices of the elements we are searching over, we can take this to be an equal superposition of all basis states, constructed by applying the hadamard gate over all qubits.
@@ -104,16 +109,52 @@ Since then, it has been the inspiration for many other algorithms, and many use 
     \item \textbf{Repeat 2 steps above and measure the final state:} We iteratively apply the oracle and the diffuser circuit to take the present superposition closer and closer to the goal state. Measurement of this state along the computational basis gives us a bitstring, which with some constant probability is the solution $x$ such that $f(x) = 1$.
 \end{enumerate}
 
-\subsection{Shor's Algorithm}
+\paragraph*{Ampliture Amplification algorithms}: The algorithmic structure proposed by Grover can be extended to solve other problems, the notion being that a quantum circuit that finds an algorithm with probability $p$ needs to be run only $O(1/\sqrt{p})$ times and not $O(1/p)$ times \cite{quantum-amplitude-amplification-algorithms}.
 
+\subsubsection{Shor's Algorithm}
 
+The Shor's algorithm is used to perform factorization of an integer product of two large prime numbers \cite{shor-quantum-algorithm-explaination}.
 
-\section{Variational Circuits}
+\paragraph*{The problem}: Given a integer which is known to be the product of two large prime numbers, we have to factor the number back into the composing integers.
+
+\paragraph*{Overview of the Algorithm}: Following is a brief explaination of how the Shor's algorithm works:
+
+\begin{enumerate}
+    \item \textbf{Preparing the Unitary}: We need to model a unitary operator which performs modular multiplication by some constant $a$.
+    \begin{equation}
+        U \ket{y} = \ket{ay \mod N}
+    \end{equation}
+    The n-qubit states for our quantum system are being represented as $\ket{0}, \ket{1}, \cdots \ket{N - 1}$, on the qubits they are being represented as the bitstrings corresponding to those numbers.
+    \item \textbf{Period Finding to Phase Estimation}: Generate a linear combination of states which is an eigenstate of the unitary operator. The states in the linear combination will form an r-element subgroup, and the phase terms multiplied to each state will be the r-th roots of unity.
+    \begin{equation}
+        \ket{u_s} = \frac{1}{\sqrt{r}} \sum_{k=0}^{r-1} e^{-\frac{2\pi i s k}{r}} \ket{a^k \mod N}
+    \end{equation}
+    \begin{equation}
+        U \ket{u_s} = e^{\frac{2 \pi i s}{r}} \ket{u_s}
+    \end{equation}
+    \item \textbf{Period Finding to Factorization}: We compute the phase $\frac{s}{r}$ from the process above. Using this, we can generate a fractional approximation to the phase and estimate the value of r. Now we know that
+    \begin{equation}
+        a^r \mod N = 1
+    \end{equation}
+    With high probability, r will be even, if it's not we will repeat this process with a new a. Given the above, we can guess a factor of $N$ as $a^{r/2} - 1$ or $a^{r/2} + 1$.
+    \begin{equation}
+        (a^{r/2} - 1) (a^{r/2} + 1) \mod N = 0
+    \end{equation}
+    Having ensured initially that $a$ is not a factor of $N$, we have found a high-probability guess for the factors being one of these two numbers. We repeat this process until this guess turns out to be correct.
+\end{enumerate}
+
+\paragraph*{Other Comments}: Shor's algorithm provides an exponential advantage over any known classical algorithm but at the moment it's too requiring of number of qubits and their fault tolerance to be implementable in any way on the present-day quantum computers. There exists an entire class of Quantum Algorithms take inspiration from this use of period finding using Quantum Phase Estimation process, one prominent example is the HHL algorithm for solving linear systems.
+
+\subsection{Variational Circuits}
 \label{sec:variational-circuits}
 
 In the previous section we have discussed purely quantum algorithms which do posess an advantage over their presently classical competitors, but need fault-tolerant quantum computers with a large number of qubits to be executed.
 
-\subsection{Quantum Approximate Optimization Algorithm}
+In this section, we look at a few hybrid quantum-classical optimization algorithms, called variational quantum algorithms. 
+
+Each optimization problems is solved over a parameter space, and attempts to maximize some metric which we call the loss. For a quantum circuit, we can visulize the loss function as some hamiltonian for which we are trying to find the lowest energy state, i.e. the ground eigenstate. This ground eigenstate is generated by some parametrized circuit, and a classical optimizer is responsible for finding as low an energy state as possible.
+
+\subsubsection{Quantum Approximate Optimization Algorithm}
 \label{sec:variational-circuits-qaoa}
 
 \begin{figure}[ht]
@@ -122,7 +163,41 @@ In the previous section we have discussed purely quantum algorithms which do pos
     \caption[Variational Circuit for QAOA]{An example of a QAOA circuit with $p = 1$ blocks and generated to compute max-cut on a graph with 3-nodes and 2 edges between (0, 2) and (1, 0). The state generated by the circuit is parameterized in terms of the 5 parameters in the circuit. The output along the z-axis gets measured and is used to compute the classical loss value, i.e. the size of the max-cut given which set each node (represented by a qubit) belongs to. Finally, a classical optimizer is used to reduce the value of the loss function such that }
 \end{figure}
 
+Quantum Approximate Optimization Algorithms are a class of variational quantum algorithms which are used as a general purpose hammer to probabilistically solve combinatorial optimization problems.
 
+\paragraph*{Motivation for the algorithm}: The algorithm takes inspiration from abiabatic quantum computing, which is a method that does the following: We start with a quantum state that is an easily preparable ground state of some Hamiltonian, and we vary this Hamiltonian sufficiently slowly and try to reach some target Hamiltonian, then the given quantum state will also track the ground state of the current form of the Hamiltonian. So the result of the algorithm, if performed slowly enough, will be the ground state of the target Hamiltonian the preparation of which might not have been obvious otherwise.
+
+QAOA takes that philosophy to the gate-computation model, and uses the trotter decomposition to approximate the application of unitaries corresponding to these Hamiltonians for sufficiently short periods of time.
+
+\paragraph*{Algorithm}: The following steps are perfomed to execute QAOA for a given optimization problem.
+\begin{enumerate}
+    \item \textbf{Prepare the initial state}: We start by applying a Hadamard on all qubits to create an initial state which is an equal superposition of all basis states.
+    \item \textbf{Apply the mixing unitary}: The mixing unitary corresponds to the mixing Hamiltonian, which is the Hamiltonian for which the initial state we have prepared is a ground state.
+    \begin{equation}
+        U(H_B) = e^{-i \beta H_B}
+    \end{equation}
+    The mixer hamiltonian therefore is $X^{\otimes N}$, and the corresponding unitary becomes $R_x(\beta)^{\otimes N}$.
+    \item \textbf{Apply the problem hamiltonian}: The problem unitary corresponds to the Hamiltonian formulation of our problem, and this the the hamiltonian for which we are attempting to find the ground eigenstate.
+    \begin{equation}
+        U(H_P) = e^{-i \gamma H_P}
+    \end{equation}
+    This has to be phrased for each individual problem.
+    \item \textbf{Repeat for p iterations}: We present the mixing-Hamiltonian problem-Hamiltonian process for p-iterations. Each of these p-layers is a $\beta$-duration mixing Hamiltonian and a $\gamma$-duration problem Hamiltonian application. For tuned values of $\beta$ and $\gamma$ and sufficiently large $p$, this can be made to approximate adiabatic computing.
+    \item \textbf{Measure and classically compute loss}: The loss value that we are attempting to optimize is the following:
+    \begin{equation}\label{eqn:loss-qaoa-circuit}
+        \mathcal{L} = \braket{\psi(\beta, \gamma) \vert H_p \vert \psi(\beta, \gamma)}
+    \end{equation}
+    To compute this, we just measure all qubits, and using the bitstring obtained in our classical registers we classically compute the value of the optimization metric for this bitstring solution.
+    \item \textbf{Classically compute derivatives and update parameters}: The parameters for each of the $p$ layers $(\beta, \gamma)$ are optimized using some method like gradient descent or adam. The attempt to reduce the value of the loss as defined in equation \ref{eqn:loss-qaoa-circuit}.
+\end{enumerate}
+
+\subsection{Variational Quantum Eigensolvers}
+
+Variational Quantum Algorithms is another entry in the class of variation algorithms, which tries to estimate the ground eigenstate and eigenvalues of a Hamiltonian using the method of optimization described above.
+
+\begin{equation}
+    \lambda_{min} \leq \braket{H}_{\psi} = \braket{\psi \vert H \vert \psi} = \sum_{i=1}^{N} \lambda_i \vert \braket{\psi_i \vert \psi} \vert ^2
+\end{equation}
 
 \section{Reinforcement Learning}
 
