@@ -16,7 +16,7 @@ Quantum Computers store information as quantum bits, or qubits. These qubits can
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\linewidth]{figures/quantum/quantum_circuit_example.png}
-    \caption{The image shows the parts of a typical quantum circuit, with 3 qubits represented by the wires and a set of gates applied to them, followed by measurement of those qubits.}
+    \caption[Typical Quantum Circuit]{The image shows the parts of a typical quantum circuit, with 3 qubits represented by the wires and a set of gates applied to them, followed by measurement of those qubits.}
     \label{fig:quantum-circuit-example}
 \end{figure}
 
@@ -32,7 +32,7 @@ Each qubit, in addition to the superposition it is in also has a phase term, whi
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.5\linewidth]{figures/quantum/bloch_sphere.png}
-    \caption{Bloch Sphere represents the state of a qubit $\ket{\psi}$. The pure states $\ket{0}$ and $\ket{1}$ are the vectors along the z-axis on the opposite poles. The angle along the x-y plane represents the phase of the qubits.}
+    \caption[Block Sphere representation of Quantum States]{Bloch Sphere represents the state of a qubit $\ket{\psi}$. The pure states $\ket{0}$ and $\ket{1}$ are the vectors along the z-axis on the opposite poles. The angle along the x-y plane represents the phase of the qubits.}
     \label{fig:bloch-sphere}
 \end{figure}
 
@@ -45,7 +45,7 @@ The state of a system of qubits can be modified by the application of unitary ga
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\linewidth]{figures/quantum/quantum_logic_gates.png}
-    \caption{Popular logic gates along with their in-circuit representations and corresponding unitary matrices.}
+    \caption[List of Logic Gates]{Popular logic gates along with their in-circuit representations and corresponding unitary matrices.}
     \label{fig:quantum-unitary-gates}
 \end{figure}
 
@@ -73,11 +73,10 @@ Much like unitary operations on state vectors, the application of unitaries on d
 Superposition and Entanglement together provide quantum computers with natural parallel processing power. While full access to this parallelism gets bottlenecked at the measurement layer since we can sample only one of the many states in weighted superposition, it is conceivable that for many an algorithm, this parallelism can result in a processing speed-up. A near-term goal with Quantum Computers is to achieve quantum supremacy, which is to solve a problem (possibly one of no practical use) that no classical computer can solve in a feasible amount of time. \cite{quantum-complexity-survey}
 
 \begin{itemize}
-    \item Grover Like - If a quantum algorithm succeeds with probability $p$, classically $1/p$ iterations are needed to succeed with constant certainty, whereas in the quantum setting using a technique called amplitude amplification, we can do the same in $O(1/\sqrt{p})$ iterations. These algoritms give a quadratic speedup over the classical.
-    \item Shor's Like - Algorithms which
-    \item Hamiltonian Simulation - Physical systems can be described by some hamiltonian, the eigenvalues of which are the achievable energy values of the system. 
+    \item Grover Like (Amplitude Amplification class of algorithms).
+    \item Shor's Like (Using Quantum Phase Estimation and Quantum Fourier Transform)
+    \item Hamiltonian Simulation 
 \end{itemize}
-
 
 \subsubsection{Grover's Search}
 
@@ -145,6 +144,28 @@ The Shor's algorithm is used to perform factorization of an integer product of t
 
 \paragraph*{Other Comments}: Shor's algorithm provides an exponential advantage over any known classical algorithm but at the moment it's too requiring of number of qubits and their fault tolerance to be implementable in any way on the present-day quantum computers. There exists an entire class of Quantum Algorithms take inspiration from this use of period finding using Quantum Phase Estimation process, one prominent example is the HHL algorithm for solving linear systems.
 
+\subsubsection{Hamiltonian Simulation}
+
+Nature is hard to simulate on a classical computer. Writing down quantum wavefunctions and updating them is computationally very expensive. As Richard Feynman said: \textit{``Nature isn't classical, dammit, and if you want to make a simulation of nature, you'd better make it quantum mechanical, and by golly it's a wonderful problem, because it doesn't look so easy.''} \cite{feynman-quantum-simulating-physics}.
+
+The most natural solution is to use the quantum systems themselves to emulate other quantum systems and perform these computations. It seems intuitive that quantum computers are efficient at doing quantum simulations, all that needs to be done is that the state of an arbitrary system needs to be mapped onto that of ours.
+
+There are many ways of performing Hamiltonian simulation on general-purpose gate-based quantum computers, some of those methods are listed below:
+\begin{itemize}
+    \item Using Trotterization: Given a hamiltonian which can be represented as a linear combination of local Hamiltonians, $H = A + B + C$, the trotter decomposition of Unitary corresponding to the hamiltonian can be approximated by
+    \begin{equation}
+        U = e^{-i H t} = (e^{-i A t / r} e^{-i A t / r} e^{-i A t / r})^r
+    \end{equation}
+    For larger values of $r$ this results in a pretty accurate simulation.
+    \item Using Taylor Expansion of Hamiltonian: The Hamiltonian can be expanded out as a sum of unitaries, and then the corresponding unitary can be taylor-series expanded out as a linear combination of the unitaries corresponding to terms of the Taylor expansion.
+    \begin{equation}
+        U = e^{-i H t} = \sum_{n=0}^{\infty} \frac{(-i H t)^n}{n!}
+    \end{equation}
+    \item Using Quantum Walks: Quantum walks can be constructed corresponding to the hamiltonian such that the spectrum of the graph on which the walk is constructed is such that it's eigenvalues correspond to the ground state of the target Hamiltonian.
+    \item Using Quantum Signal Processing: The QSP algorithm transduces eigenvalues of the Hamiltonian into an ancilla, and then transforms the eigenvalues with single qubit rotations, and finally projects it back to the ancilla.
+\end{itemize}
+
+
 \subsection{Variational Circuits}
 \label{sec:variational-circuits}
 
@@ -190,6 +211,21 @@ QAOA takes that philosophy to the gate-computation model, and uses the trotter d
     To compute this, we just measure all qubits, and using the bitstring obtained in our classical registers we classically compute the value of the optimization metric for this bitstring solution.
     \item \textbf{Classically compute derivatives and update parameters}: The parameters for each of the $p$ layers $(\beta, \gamma)$ are optimized using some method like gradient descent or adam. The attempt to reduce the value of the loss as defined in equation \ref{eqn:loss-qaoa-circuit}.
 \end{enumerate}
+
+\paragraph*{QAOA for Max Cut of a Graph}: Given a graph with vertices $v \in V$ and edges $e \in E \subset V \times V$, we want to compute a partition of vertices into two sets $f: V \rightarrow \{-1, +1\}$ such that the number of edges going across the partition ($C = \{ e = (u, v) | e \in E \;;\; f(u) \neq f(v) \}$) is maximized ($\max_{f} |C|$).
+
+The QAOA formulation follows naturally. The classical loss function is the following:
+\begin{equation}
+    \mathcal{L} = \frac{-1}{2} \sum_{e = (u, v) \in E} (f(u) \cdot f(v) - 1)
+\end{equation}
+Since the Pauli-Z operator on the $\ket{0}$ and $\ket{1}$ state acts similar to the function $f$, in the quantum phrasing we can equivalently use the Z operators. We can drop the global constants and additive terms when writing out the optimization objective.
+\begin{equation}
+    \mathcal{H} = \frac{-1}{2} \sum_{e = (u, v)} I_0 \otimes I_1 \otimes \ldots \otimes Z_u \otimes \ldots \otimes Z_u \otimes \ldots \otimes I_N
+\end{equation}
+This can be efficiently implemented in a circuit, which will be used as the problem unitary.
+
+\paragraph*{Other applications}: The QAOA algorithm can be further used to solve approximately other problems including those that are NP-complete such as Weighted Max-Cut, 3-SAT, Travelling Salesman problem amongst others. On the problem of Max-Cut, QAOA had for a short span of about 3-months held the best approximation ratio until it was superseeded by semi-definite programming. Even though QAOA may not be able to be the bounds achievable by classical computers, the universality of it's applicability is remarkable. Coming with with classical methods to outperform QAOA on every single new task takes a lot of effort, semi-definite programming solutions have proven to be the best bet to outperform QAOA but they have to be formulated afresh for each problem. Therefore, as a general purpose solution to many problems, QAOA stands as a very good bet.
+
 
 \subsection{Variational Quantum Eigensolvers}
 

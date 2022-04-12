@@ -32,7 +32,7 @@ In the context of NISQ hardware, this procedure is of extreme importance as the 
         \caption{Decomposed transformed circuit\label{fig:transformed_circ}}
     \end{subfigure}
     \hfill
-    \caption{An example of qubit routing on a quantum circuit for 3$\times$3 grid architecture (Figure \ref{fig:3-3-arch}). (a) For simplicity, the original quantum circuit consists only of two-qubit gate operations. (b) Decomposition of the original quantum circuit into series of slices such that all the instructions present in a slice can be executed in parallel. The two-qubit gate operations: $\{d,e\}$ (green) comply with the topology of the grid architecture whereas the operations: $\{a, b, c, f\}$ (red) do not comply with the topology (and therefore cannot be performed). Note that the successive two-qubit gate operations on $q_3\rightarrow q_4$ (blue) are redundant and are not considered while routing. (c) Decomposition of the transformed quantum circuit we get after qubit routing. Four additional SWAP gates are added that increased the circuit depth to $5$, i.e., an overhead circuit depth of $2$. The final qubit labels are represented at the end right side of the circuit. The qubits that are not moved (or swapped) are shown in brown ($\{q_1, q_5\}$), while the rest of them are shown in blue.}
+    \caption[Topologies of Quantum Computing hardware qRoute is tested on]{An example of qubit routing on a quantum circuit for 3$\times$3 grid architecture (Figure \ref{fig:3-3-arch}). (a) For simplicity, the original quantum circuit consists only of two-qubit gate operations. (b) Decomposition of the original quantum circuit into series of slices such that all the instructions present in a slice can be executed in parallel. The two-qubit gate operations: $\{d,e\}$ (green) comply with the topology of the grid architecture whereas the operations: $\{a, b, c, f\}$ (red) do not comply with the topology (and therefore cannot be performed). Note that the successive two-qubit gate operations on $q_3\rightarrow q_4$ (blue) are redundant and are not considered while routing. (c) Decomposition of the transformed quantum circuit we get after qubit routing. Four additional SWAP gates are added that increased the circuit depth to $5$, i.e., an overhead circuit depth of $2$. The final qubit labels are represented at the end right side of the circuit. The qubits that are not moved (or swapped) are shown in brown ($\{q_1, q_5\}$), while the rest of them are shown in blue.}
     %Note that the overall unitary operation performed by the circuit is preserved despite the changes in the order of two-qubit gate operations.}
     \label{fig:routing-example}
 \end{figure}
@@ -96,8 +96,9 @@ Finally, we provide a simple python package containing the implementation of QRo
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{figures/qroute/Search.pdf}
-    \caption{\label{fig:mcts-explainer}
+    \caption[Visualization of steps in Monte Carlo Tree Search]{
         Iteration of a Monte Carlo tree search: (i) select - recursively choosing a node in the search tree for exploration using a selection criteria, (ii) expand - expanding the tree using the available actions if an unexplored leaf node is selected, (iii) rollout - estimating long term reward using a neural network for the action-state pair for the new node added to search tree, and (iv) backup - propagating reward value from the leaf nodes upwards to update the evaluations of its ancestors.}
+    \label{fig:mcts-explainer}
 \end{figure}
 
 
@@ -161,7 +162,7 @@ For every state-action pair, the application of a feasible move $m$ on it will r
 \begin{figure*}[th]
 \centering
     \includegraphics[width=\textwidth]{figures/qroute/Architecture.pdf}
-    \caption{\label{fig:network-architecture}
+    \caption[Graph neural network architecture that approximates value and policy function]{\label{fig:network-architecture}
      Graph neural network architecture that approximates the value function and the policy function.}
      %The $state$ object (orange), shown on the far left, is provided as an input. The edge convolution block (yellow) extracts the features from the input object, collects them, flattens them, and concatenates them with the rest of the input for further processing. Here, the network diverges into two segments, one called the value head, which gives a scalar output representing the quality of the state, and another policy head, which provides the probability distribution over the best action from this state.}
 \end{figure*}
@@ -221,7 +222,7 @@ Qiskit's transpiler uses gate commutation rules while perform qubit routing. Thi
 
 \begin{figure}[t]
     \includegraphics[width=\linewidth]{figures/qroute/random_benchmark.pdf}
-    \caption{\label{fig:results-random}
+    \caption[qRoute Results on randomly generated circuits]{\label{fig:results-random}
         Comparative performance of routing algorithms on random circuits as a function of the number of two-qubit operations in the circuit.}
 \end{figure}
 
@@ -241,7 +242,7 @@ The model presented herein has the best performance on this dataset. We also com
 
 \begin{figure}[t]
     \includegraphics[width=\linewidth]{figures/qroute/realistic_small_benchmark.pdf}
-    \caption{\label{fig:results-small}
+    \caption[qRoute Results on small realistic circuit set]{\label{fig:results-small}
         Plots of output circuit depths of routing algorithms over small realistic circuits ($\leq 100$ gates), summed over the entire dataset. The inset shows the results on the same data comparing the best performant scheduler excluding and including QRoute on each circuit respectively.}
 \end{figure}
 
@@ -250,7 +251,7 @@ The model presented herein has the best performance on this dataset. We also com
 \begin{figure*}[ht]
     \centering
     \includegraphics[width=\linewidth]{figures/qroute/realistic_large_benchmark.pdf}
-    \caption{\label{fig:results-large}
+    \caption[qRoute Results on large realistic circuit set]{\label{fig:results-large}
         The results over eight circuits sampled from the large realistic dataset benchmark, the outputs of each routing algorithm are shown for every circuit.}
 \end{figure*}
 

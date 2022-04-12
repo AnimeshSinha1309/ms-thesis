@@ -55,7 +55,7 @@ Following is the plot of the average Circuit Depth ratio produced by our method 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{figures/qroute/sycamore.pdf}
-    \caption{\label{fig:supp-sycamore-results}A comparative of the performance of the different routing methods on the small circuit dataset when routing on Google Sycamore device.}
+    \caption[qRoute Results on Google Sycamore for small realistic circuits]{\label{fig:supp-sycamore-results}A comparative of the performance of the different routing methods on the small circuit dataset when routing on Google Sycamore device.}
 \end{figure}
 
 \onecolumn
@@ -67,7 +67,7 @@ In this section, we show an example run of our algorithm on a $3 \times 3$ devic
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{figures/qroute/Evolution.pdf}
-    \caption{\label{fig:supp-evolution}The step by step evolution of the state as the circuit is getting routed. The state is shown on a $3 \times 3$ grid, where in each cell we have the node ID and the next node that it need to participate in a 2-qubit operation with. The yellow and orange colors represent that those 2 qubits have participated in a 2 qubit operation like CNOT, which was scheduled in the previous timestep. The green and purple colors represent that they have just participated in a SWAP operation. Any qubit which is colored was locked in the previous timestep when the action that scheduled it was getting constructed. At time=5, the circuit has been scheduled and none of the qubits have any targets left.}
+    \caption[qRoute evolution of state visualized]{\label{fig:supp-evolution}The step by step evolution of the state as the circuit is getting routed. The state is shown on a $3 \times 3$ grid, where in each cell we have the node ID and the next node that it need to participate in a 2-qubit operation with. The yellow and orange colors represent that those 2 qubits have participated in a 2 qubit operation like CNOT, which was scheduled in the previous timestep. The green and purple colors represent that they have just participated in a SWAP operation. Any qubit which is colored was locked in the previous timestep when the action that scheduled it was getting constructed. At time=5, the circuit has been scheduled and none of the qubits have any targets left.}
 \end{figure}
 
 \begin{figure}[ht]
@@ -83,7 +83,7 @@ In this section, we show an example run of our algorithm on a $3 \times 3$ devic
         \caption{Decomposed circuit\label{fig:appendix-sliced_circ}}
     \end{subfigure}
     \hfill
-    \caption{This figure shows the input and output of the routing process shown above in Figure \ref{fig:supp-evolution}. The input circuit was used to decide the targets of the qubits. Gates are added to the output circuit whenever a 2-qubit operation, whether CNOT or SWAP is applied by the router. We can check that both these circuits are equivalent}.
+    \caption[The transformed circuit output from qRoute]{This figure shows the input and output of the routing process shown above in Figure \ref{fig:supp-evolution}. The input circuit was used to decide the targets of the qubits. Gates are added to the output circuit whenever a 2-qubit operation, whether CNOT or SWAP is applied by the router. We can check that both these circuits are equivalent}.
     %Note that the overall unitary operation performed by the circuit is preserved despite the changes in the order of two-qubit gate operations.}
     \label{fig:appendix-routing-example}
 \end{figure}
@@ -95,7 +95,7 @@ In this section, we show an example run of our algorithm on a $3 \times 3$ devic
 \subsection{Random Test Circuits}
 
 \begin{longtable}[c]{|c|c|c|c|c|c|c|c|}
-\caption{\textbf{Comparative results for a set of randomly generated test circuits}}
+\caption{Comparative results for a set of randomly generated test circuits}
 \label{tab:random-circuits}\\
 \hline
 \multicolumn{2}{|c|}{Input Circuit} & \multicolumn{6}{c|}{Output Circuit Depth} \\ \hline
@@ -184,7 +184,7 @@ In this section, we show an example run of our algorithm on a $3 \times 3$ devic
 \subsection{Small Realistic Circuits}
 
 \begin{longtable}[c]{|c|c|c|c|c|c|c|c|c|}
-\caption{\textbf{Comparative results for low-depth realistic test circuits}}
+\caption{Comparative results for low-depth realistic test circuits}
 \label{tab:realistic-short-circuits}\\
 \hline
 \multicolumn{2}{|c|}{Input Circuit} & \multicolumn{7}{c|}{Output Circuit Depth} \\ \hline
@@ -269,7 +269,7 @@ one-two-three-v3\_101 & 29 & 35 & 34 & 43 & 36 & 37 & 38 & 46 \\ \hline
 
 \subsection{Large Realistic Circuits}
 \begin{longtable}[c]{|c|c|c|c|c|c|c|}
-\caption{\textbf{Comparative results for long-depth realistic test circuits}}
+\caption{Comparative results for long-depth realistic test circuits}
 \label{tab:realistic-large-circuits}\\
 \hline
 \multicolumn{2}{|c|}{Input Circuit} & \multicolumn{5}{c|}{Output Circuit Depth} \\ \hline
