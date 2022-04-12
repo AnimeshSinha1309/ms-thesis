@@ -1,17 +1,17 @@
-In this chapter, we introduce the basics of quantum computing and reinforcement learning the form the backdrop the work in the remainder of the thesis.
+This chapter introduces the basics of quantum computing and reinforcement learning that form the backdrop of the work in the remainder of the thesis.
 
-We start with a brief introduction of the quantum computation model, it's mathematical and geometric formalism, and introduce the circuit model of computation. 
+We start with a brief introduction of the quantum computation model and its mathematical and geometric formalism and introduce the circuit model of computation. 
 
-Next, we start a discussion on Quantum Algorithms, starting with pure quantum algorithms like Grover's, Shor's, and Hamiltonian simulation and moving on to Variational Methods like QAOA (Quantum Approximate Optimization Algorithm) and VQE (Variational Quantum Eigensolver). The compilation and visualization of these algorithms form the basis of the work presented in this thesis, and both our algorithms have been tested extensively on some subset of these circuits. We also show that there are a small number of such subroutines that have currently been discovered in quantum algorithmic theory, and these subroutines are often and repeatedly used, motivating the value of performing routing as close to optimally as possible on these circuits (Routing results on these algorithmic benchmarks as setup by IBM are listed in \ref{ch:appendix-qroute}). The QAOA algorithm for max-cut is also our test-bed for analyzing and visualizing the learning properties of these variational circuits.
+Next, we start a discussion on Quantum Algorithms, starting with pure quantum algorithms like Grover's, Shor's, and Hamiltonian simulation and moving on to Variational Methods like QAOA (Quantum Approximate Optimization Algorithm) and VQE (Variational Quantum Eigensolver). The compilation and visualization of these algorithms form the basis of the work presented in this thesis. Both our algorithms have been tested extensively on some subset of these circuits. There are a small number of such subroutines that have currently been discovered in quantum algorithmic theory, and these subroutines are often and repeatedly used, motivating the value of performing routing as close to optimally as possible on these circuits (Routing results on these algorithmic benchmarks as setup by IBM are listed in \ref{ch:appendix-qroute}). The QAOA algorithm for max-cut is also our test-bed for analyzing and visualizing the learning properties of these variational circuits.
 
-Finally, we move to a didactic introduction to reinforcement learning the different settings like Value-based, Policy-based, etc. We add some mathematical/algorithmic details to those settings and algorithms which are relevant to our work, like Actor Critic methods, Monte Carlo Tree Search, etc.
+Finally, we move to a didactic introduction to reinforcement learning the different settings like Value-based, Policy-based, etc. We add some mathematical/algorithmic details to those settings and algorithms relevant to our work, like Actor-Critic methods, Monte Carlo Tree Search, etc.
 
 \section{Quantum Computation}
 
 
 \subsection{Qubits and Quantum Computation Model}
 
-Quantum Computers store information as quantum bits, or qubits. These qubits can be evolved by operating on them with unitary operators, also called gates. The gate model of computation is rather familiar, following is a diagramatic illustration of the same:
+Quantum Computers store information as quantum bits, or qubits. These qubits can be evolved by operating on them with unitary operators, also called gates. The gate model of computation is rather familiar; the following is a diagrammatic illustration of the same:
 
 \begin{figure}[ht]
     \centering
@@ -27,7 +27,7 @@ A classical bit can be either 0 or 1. However, a qubit can live in any state inb
 \end{equation}
 where the normalization of probabilities forces. However this state of the qubit is not accessible to us, and we can only measure the qubit probabilistically, with probability of being $\ket{0}$ being $\alpha^2$ and that of $\ket{1}$ being $\beta^2$.
 
-Each qubit, in addition to the superposition it is in also has a phase term, which is represented on the bloch-sphere \ref{fig:bloch-sphere} on the x-y plane. The phase doesn't affect the immediate measurement of the qubit, but can affect the resultant phase and superposition when some unitary operation is applied on the qubit.
+Each qubit, in addition to the superposition it is in, also has a phase term, which is represented on the Bloch-sphere \ref{fig:bloch-sphere} on the x-y plane. The phase does not affect the immediate measurement of the qubit but can affect the resultant phase and superposition when some unitary operation is applied to the qubit.
 
 \begin{figure}[ht]
     \centering
@@ -40,7 +40,7 @@ Each qubit, in addition to the superposition it is in also has a phase term, whi
 \subsection{Unitaries, Gates, and Entanglement}
 \label{sec:background-unitary-gate-entanglement}
 
-The state of a system of qubits can be modified by the application of unitary gates on those qubits.
+The state of a system of qubits can be modified by applying unitary gates on those qubits.
 
 \begin{figure}[ht]
     \centering
@@ -49,12 +49,12 @@ The state of a system of qubits can be modified by the application of unitary ga
     \label{fig:quantum-unitary-gates}
 \end{figure}
 
-Some multi-qubit gates introduce a property called entanglement. Examples of such gates are CNOT, CZ, etc. Once two qubits are ``entangled'' through some such operation like CNOT, their state cannot be written as a product of the individual states of the qubits, their are now linked in a way that the probability distribution of collapsing to either state along th measurement axis is not factorizable. 
+Some multi-qubit gates introduce a property called Entanglement. Examples of such gates are CNOT, CZ, etc. Once two qubits are "entangled" through some such operation like CNOT, their state cannot be written as a product of the individual states of the qubits; they are now linked in a way that the probability distribution of collapsing either state along the measurement axis is not factorizable. 
 
 
 \subsection{Density Matrices and Noise}
 
-State preparation on a quantum computer is subject to noise, therefore there often exists some uncertainty in state of qubits on actual physical hardware. This uncertainty can be modelled as a classical probability distribution over the different quantum states that might have been prepared. Such a state is called a mixed state, as opposed to a pure state. Mixed states can be represented using Density matrices $\rho$, which are 2-D matrices with $2^n \times 2^n$ elements for $n$ qubits.
+State preparation on a quantum computer is subject to noise. Therefore there often exists some uncertainty in the state of qubits on actual physical hardware. This uncertainty can be modeled as a classical probability distribution over the different quantum states that might have been prepared. Such a state is called a mixed state, as opposed to a pure state. Mixed states can be represented using Density matrices $\rho$, which are 2-D matrices with $2^n \times 2^n$ elements for $n$ qubits.
 \begin{equation}
     \rho = \sum_{i} p_i \ket{x_i} \bra{x_i}
 \end{equation}
@@ -80,11 +80,11 @@ Superposition and Entanglement together provide quantum computers with natural p
 
 \subsubsection{Grover's Search}
 
-Grover's search is an algorithm to search in a unordered list of size $n$ in $\sqrt{n}$ time proposed by Grover in 1996 \cite{grover-search-original}.
+Grover's search is an algorithm to search in an unordered list of size $n$ in $\sqrt{n}$ time proposed by Grover in 1996 \cite{grover-search-original}.
 
-\paragraph*{The Problem}: Grover attacks the problem of unstructured search, where we have a list of $n$ elements in an any permutation and we have an oracle which marks each of these elements $1$, which is one of the results of the search procedure we wished to find, or as $0$ which is for those elements which were not one of those elements. We are told that the oracle only returns a value of $1$ for some $m$ of those elements, where $m << n$.
+\paragraph*{The Problem}: Grover attacks the problem of unstructured search, where we have a list of $n$ elements in any permutation, and we have an oracle that marks each of these elements $1$, which is one of the results of the search procedure we wished to find, or as $0$ which is for those elements which were not one of those elements. We are told that the oracle only returns a value of $1$ for some $m$ of those elements, where $m << n$.
 
-\paragraph*{Overview of the Algorithm}: Following is a brief explaination of how the Grover's algorithm operates:
+\paragraph*{Overview of the Algorithm}: Following is a brief explanation of how the Grover's Algorithm operates:
 
 \begin{enumerate}
     \item \textbf{Preparing the initial superposition of bitstrings:} The initial state should be the superposition of all elements in our search domain. Since these are the indices of the elements we are searching over, we can take this to be an equal superposition of all basis states, constructed by applying the hadamard gate over all qubits.
@@ -112,11 +112,11 @@ Grover's search is an algorithm to search in a unordered list of size $n$ in $\s
 
 \subsubsection{Shor's Algorithm}
 
-The Shor's algorithm is used to perform factorization of an integer product of two large prime numbers \cite{shor-quantum-algorithm-explaination}.
+Shor's Algorithm is used to perform factorization of an integer product of two large prime numbers \cite{shor-quantum-algorithm-explaination}.
 
-\paragraph*{The problem}: Given a integer which is known to be the product of two large prime numbers, we have to factor the number back into the composing integers.
+\paragraph*{The problem}: Given an integer that is known to be the product of two large prime numbers, we have to factor the number back into the composing integers.
 
-\paragraph*{Overview of the Algorithm}: Following is a brief explaination of how the Shor's algorithm works:
+\paragraph*{Overview of the Algorithm}: Following is a brief explanation of how the Shor's Algorithm works:
 
 \begin{enumerate}
     \item \textbf{Preparing the Unitary}: We need to model a unitary operator which performs modular multiplication by some constant $a$.
@@ -142,17 +142,17 @@ The Shor's algorithm is used to perform factorization of an integer product of t
     Having ensured initially that $a$ is not a factor of $N$, we have found a high-probability guess for the factors being one of these two numbers. We repeat this process until this guess turns out to be correct.
 \end{enumerate}
 
-\paragraph*{Other Comments}: Shor's algorithm provides an exponential advantage over any known classical algorithm but at the moment it's too requiring of number of qubits and their fault tolerance to be implementable in any way on the present-day quantum computers. There exists an entire class of Quantum Algorithms take inspiration from this use of period finding using Quantum Phase Estimation process, one prominent example is the HHL algorithm for solving linear systems.
+\paragraph*{Other Comments}: Shor's Algorithm provides an exponential advantage over any known classical algorithm, but at the moment, it demands too many qubits, and it demands that fault tolerance be implemented, which is presently infeasible. An entire class of Quantum Algorithms takes inspiration from this use of period finding using the Quantum Phase Estimation process, and one prominent example is the HHL algorithm for solving linear systems.
 
 \subsubsection{Hamiltonian Simulation}
 
-Nature is hard to simulate on a classical computer. Writing down quantum wavefunctions and updating them is computationally very expensive. As Richard Feynman said: \textit{``Nature isn't classical, dammit, and if you want to make a simulation of nature, you'd better make it quantum mechanical, and by golly it's a wonderful problem, because it doesn't look so easy.''} \cite{feynman-quantum-simulating-physics}.
+Nature is hard to simulate on a classical computer. Writing down quantum wavefunctions and updating them is computationally very expensive. As Richard Feynman said: \textit{"Nature is not classical, dammit, and if you want to make a simulation of nature, you'd better make it quantum mechanical, and by golly, it's a wonderful problem, because it doesn't look so easy." } \cite{feynman-quantum-simulating-physics}.
 
-The most natural solution is to use the quantum systems themselves to emulate other quantum systems and perform these computations. It seems intuitive that quantum computers are efficient at doing quantum simulations, all that needs to be done is that the state of an arbitrary system needs to be mapped onto that of ours.
+The most natural solution is to use the quantum systems to emulate other quantum systems and perform these computations. It seems intuitive that quantum computers are efficient at doing quantum simulations; all that needs to be done is that the state of an arbitrary system needs to be mapped onto that of ours.
 
-There are many ways of performing Hamiltonian simulation on general-purpose gate-based quantum computers, some of those methods are listed below:
+There are many ways of performing Hamiltonian simulation on general-purpose gate-based quantum computers. Some of those methods are listed below:
 \begin{itemize}
-    \item Using Trotterization: Given a hamiltonian which can be represented as a linear combination of local Hamiltonians, $H = A + B + C$, the trotter decomposition of Unitary corresponding to the hamiltonian can be approximated by
+    \item Using Trotterization: Given a hamiltonian which can be represented as a linear combination of local Hamiltonians, $H = A + B + C$, the trotter decomposition of Unitary corresponding to the Hamiltonian can be approximated by
     \begin{equation}
         U = e^{-i H t} = (e^{-i A t / r} e^{-i A t / r} e^{-i A t / r})^r
     \end{equation}
@@ -161,19 +161,19 @@ There are many ways of performing Hamiltonian simulation on general-purpose gate
     \begin{equation}
         U = e^{-i H t} = \sum_{n=0}^{\infty} \frac{(-i H t)^n}{n!}
     \end{equation}
-    \item Using Quantum Walks: Quantum walks can be constructed corresponding to the hamiltonian such that the spectrum of the graph on which the walk is constructed is such that it's eigenvalues correspond to the ground state of the target Hamiltonian.
-    \item Using Quantum Signal Processing: The QSP algorithm transduces eigenvalues of the Hamiltonian into an ancilla, and then transforms the eigenvalues with single qubit rotations, and finally projects it back to the ancilla.
+    \item Using Quantum Walks: Quantum walks can be constructed corresponding to the Hamiltonian such that the spectrum of the graph on which the walk is constructed is such that its eigenvalues correspond to the ground state of the target Hamiltonian.
+    \item Using Quantum Signal Processing: The QSP algorithm transduces eigenvalues of the Hamiltonian into an ancilla, then transforms the eigenvalues with single-qubit rotations, and finally projects it back to the ancilla.
 \end{itemize}
 
 
 \subsection{Variational Circuits}
 \label{sec:variational-circuits}
 
-In the previous section we have discussed purely quantum algorithms which do posess an advantage over their presently classical competitors, but need fault-tolerant quantum computers with a large number of qubits to be executed.
+In the previous section, we have discussed purely quantum algorithms, which possess an advantage over their presently classical competitors but need fault-tolerant quantum computers with many qubits to be executed.
 
 In this section, we look at a few hybrid quantum-classical optimization algorithms, called variational quantum algorithms. 
 
-Each optimization problems is solved over a parameter space, and attempts to maximize some metric which we call the loss. For a quantum circuit, we can visulize the loss function as some hamiltonian for which we are trying to find the lowest energy state, i.e. the ground eigenstate. This ground eigenstate is generated by some parametrized circuit, and a classical optimizer is responsible for finding as low an energy state as possible.
+Each optimization problem is solved over a parameter space and attempts to maximize some metric which we call the loss. For a quantum circuit, we can visualize the loss function as some hamiltonian for which we are trying to find the lowest energy state, i.e., the ground eigenstate. Some parametrized circuit generates this ground eigenstate, and a classical optimizer is responsible for finding as low an energy state as possible.
 
 \subsubsection{Quantum Approximate Optimization Algorithm}
 \label{sec:variational-circuits-qaoa}
@@ -181,35 +181,35 @@ Each optimization problems is solved over a parameter space, and attempts to max
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\linewidth]{figures/intro/qaoa-optimization.png}
-    \caption[Variational Circuit for QAOA]{An example of a QAOA circuit with $p = 1$ blocks and generated to compute max-cut on a graph with 3-nodes and 2 edges between (0, 2) and (1, 0). The state generated by the circuit is parameterized in terms of the 5 parameters in the circuit. The output along the z-axis gets measured and is used to compute the classical loss value, i.e. the size of the max-cut given which set each node (represented by a qubit) belongs to. Finally, a classical optimizer is used to reduce the value of the loss function such that }
+    \caption[Variational Circuit for QAOA]{An example of a QAOA circuit with $p = 1$ blocks and generated to compute max-cut on a graph with 3-nodes and 2-edges between (0, 2) and (1, 0). The state generated by the circuit is parameterized in terms of the five parameters in the circuit. The output along the z-axis is measured and used to compute the classical loss value, i.e., the size of the max-cut given to which each node (represented by a qubit) belongs. Finally, a classical optimizer is used to reduce the value of the loss function such that }
 \end{figure}
 
-Quantum Approximate Optimization Algorithms are a class of variational quantum algorithms which are used as a general purpose hammer to probabilistically solve combinatorial optimization problems.
+Quantum Approximate Optimization Algorithms are a class of variational quantum algorithms used as a general-purpose hammer to solve combinatorial optimization problems probabilistically.
 
-\paragraph*{Motivation for the algorithm}: The algorithm takes inspiration from abiabatic quantum computing, which is a method that does the following: We start with a quantum state that is an easily preparable ground state of some Hamiltonian, and we vary this Hamiltonian sufficiently slowly and try to reach some target Hamiltonian, then the given quantum state will also track the ground state of the current form of the Hamiltonian. So the result of the algorithm, if performed slowly enough, will be the ground state of the target Hamiltonian the preparation of which might not have been obvious otherwise.
+\paragraph*{Motivation for the Algorithm}: The Algorithm takes inspiration from adiabatic quantum computing, which is a method that does the following: We start with a quantum state that is an easily preparable ground state of some Hamiltonian, and we vary this Hamiltonian sufficiently slowly and try to reach some target Hamiltonian, then the given quantum state will also track the ground state of the current form of the Hamiltonian. So the result of the Algorithm, if performed slowly enough, will be the ground state of the target Hamiltonian the preparation of which might not have been obvious otherwise.
 
-QAOA takes that philosophy to the gate-computation model, and uses the trotter decomposition to approximate the application of unitaries corresponding to these Hamiltonians for sufficiently short periods of time.
+QAOA takes that philosophy to the gate-computation model and uses the trotter decomposition to approximate the application of unitaries corresponding to these Hamiltonians for sufficiently short periods of time.
 
-\paragraph*{Algorithm}: The following steps are perfomed to execute QAOA for a given optimization problem.
+\paragraph*{Algorithm}: The following steps are performed to execute QAOA for a given optimization problem.
 \begin{enumerate}
     \item \textbf{Prepare the initial state}: We start by applying a Hadamard on all qubits to create an initial state which is an equal superposition of all basis states.
     \item \textbf{Apply the mixing unitary}: The mixing unitary corresponds to the mixing Hamiltonian, which is the Hamiltonian for which the initial state we have prepared is a ground state.
     \begin{equation}
         U(H_B) = e^{-i \beta H_B}
     \end{equation}
-    The mixer hamiltonian therefore is $X^{\otimes N}$, and the corresponding unitary becomes $R_x(\beta)^{\otimes N}$.
-    \item \textbf{Apply the problem hamiltonian}: The problem unitary corresponds to the Hamiltonian formulation of our problem, and this the the hamiltonian for which we are attempting to find the ground eigenstate.
+    The mixer hamiltonian, therefore, is $X^{\otimes N}$, and the corresponding unitary becomes $R_x(\beta)^{\otimes N}$.
+    \item \textbf{Apply the problem Hamiltonian}: The problem unitary corresponds to the Hamiltonian formulation of our problem, and this is the Hamiltonian for which we are attempting to find the ground eigenstate.
     \begin{equation}
         U(H_P) = e^{-i \gamma H_P}
     \end{equation}
-    This has to be phrased for each individual problem.
-    \item \textbf{Repeat for p iterations}: We present the mixing-Hamiltonian problem-Hamiltonian process for p-iterations. Each of these p-layers is a $\beta$-duration mixing Hamiltonian and a $\gamma$-duration problem Hamiltonian application. For tuned values of $\beta$ and $\gamma$ and sufficiently large $p$, this can be made to approximate adiabatic computing.
+    This has to be phrased for each problem.
+    \item \textbf{Repeat for p iterations}: We present the mixing-Hamiltonian problem-Hamiltonian process for p-iterations. Each player is a $\beta$-duration mixing Hamiltonian and a $\gamma$-duration problem Hamiltonian application. For tuned values of $\beta$ and $\gamma$ and sufficiently large $p$, this can be made to approximate adiabatic computing.
     \item \textbf{Measure and classically compute loss}: The loss value that we are attempting to optimize is the following:
     \begin{equation}\label{eqn:loss-qaoa-circuit}
         \mathcal{L} = \braket{\psi(\beta, \gamma) \vert H_p \vert \psi(\beta, \gamma)}
     \end{equation}
-    To compute this, we just measure all qubits, and using the bitstring obtained in our classical registers we classically compute the value of the optimization metric for this bitstring solution.
-    \item \textbf{Classically compute derivatives and update parameters}: The parameters for each of the $p$ layers $(\beta, \gamma)$ are optimized using some method like gradient descent or adam. The attempt to reduce the value of the loss as defined in equation \ref{eqn:loss-qaoa-circuit}.
+    To compute this, we measure all qubits, and using the bitstring obtained in our classical registers, we classically compute the value of the optimization metric for this bitstring solution.
+    \item \textbf{Classically compute derivatives and update parameters}: The parameters for each of the $p$ layers $(\beta, \gamma)$ are optimized using some method like gradient descent or adam. We attempt to reduce the value of the loss, as defined by the parameter updates in equation \ref{eqn:loss-qaoa-circuit}.
 \end{enumerate}
 
 \paragraph*{QAOA for Max Cut of a Graph}: Given a graph with vertices $v \in V$ and edges $e \in E \subset V \times V$, we want to compute a partition of vertices into two sets $f: V \rightarrow \{-1, +1\}$ such that the number of edges going across the partition ($C = \{ e = (u, v) | e \in E \;;\; f(u) \neq f(v) \}$) is maximized ($\max_{f} |C|$).
@@ -224,7 +224,7 @@ Since the Pauli-Z operator on the $\ket{0}$ and $\ket{1}$ state acts similar to 
 \end{equation}
 This can be efficiently implemented in a circuit, which will be used as the problem unitary.
 
-\paragraph*{Other applications}: The QAOA algorithm can be further used to solve approximately other problems including those that are NP-complete such as Weighted Max-Cut, 3-SAT, Travelling Salesman problem amongst others. On the problem of Max-Cut, QAOA had for a short span of about 3-months held the best approximation ratio until it was superseeded by semi-definite programming. Even though QAOA may not be able to be the bounds achievable by classical computers, the universality of it's applicability is remarkable. Coming with with classical methods to outperform QAOA on every single new task takes a lot of effort, semi-definite programming solutions have proven to be the best bet to outperform QAOA but they have to be formulated afresh for each problem. Therefore, as a general purpose solution to many problems, QAOA stands as a very good bet.
+\paragraph*{Other applications}: The QAOA algorithm can be further used to solve approximately other problems, including those that are NP-complete such as Weighted Max-Cut, 3-SAT, Travelling Salesman problem, amongst others. On the problem of Max-Cut, QAOA had, for a short span of about 3-months, held the best approximation ratio until it was superseded by semi-definite programming. Even though QAOA may not be able to be within the bounds achievable by classical computers, the universality of its applicability is remarkable. Coming up with classical methods to outperform QAOA on every new task takes much effort, semi-definite programming solutions have proven to be the best bet to outperform QAOA, but they have to be formulated afresh for each problem. Therefore, as a general-purpose solution to many problems, QAOA stands as a very good bet.
 
 
 \subsection{Variational Quantum Eigensolvers}
@@ -239,33 +239,31 @@ Variational Quantum Algorithms is another entry in the class of variation algori
 
 \subsection{What is Reinforcement Learning}
 
-Machine Learning and all associated sub-disciplines are motivated by the goal of achieving artificial general intelligence, that is being able to mimic the human mind and even surpass it's capacity to percieve, compute and actuate. The human mind deals with a veritable variety of problems differing greatly in their phrasing, in the solutions they admit, etc. Of this host of problem types, 
+Machine Learning and all associated sub-disciplines are motivated by the goal of achieving artificial general intelligence, that is, being able to mimic the human mind and even surpass its capacity to perceive, compute and actuate. The human mind deals with various problems differing greatly in their phrasing, the solutions they admit, etc. Of this host of problem types, 
 
-Deep Learning is an extremely powerful and popular one of these methods, which uses parameterized function approximators (aka. neural networks) to learn arbitrary functions directly from examples. We typically learn functions which take as input numerical data and associated structure (e.g. graphs) and produce one or many continuous-valued outputs (regression) or discrete-value outputs (classification). This has been employed with great success in computational chemistry, for instance, on predicting properties of molecules like solubility, smell, energy, etc. % Come up with more examples
+Deep Learning is an extremely powerful and popular one of these methods, which uses parameterized function approximators (aka. neural networks) to learn arbitrary functions directly from examples. We typically learn functions that take as input numerical data and associated structure (e.g., graphs) and produce one or many continuous-valued outputs (regression) or discrete-value outputs (classification). This has been employed with great success in computational chemistry, for instance, in predicting properties of molecules like solubility, smell, energy, etc.
 
-Despite all their predictive power, these methods are limited in the set of problems they can solve. One limitation is our inability to provide a large number of labeled examples since running laboratory experiments or expensive in-silico simulations are often too time and resource-consuming. Another issue is that the output may not be a simple function of its inputs. For instance, when predicting molecular coordinates from molecular graphs, our outputs depend greatly on each other the position of one atom affects that of all others, and therefore a single step function cannot solve such a problem, an iterative approach to optimize these coordinates is required. In such cases where a problem is solved in many steps, there is no notion of the correct result after a single step, we can only score if the final result is produced by the composite of steps. All these problems necessitate a machine learning method which can produce outputs over several timesteps, and be able to reason about the correctness of its outputs based on rewards it may obtain at a different time in our process. This method is Reinforcement Learning. \cite{rl-intro-sutton-barto}
+Despite all their predictive power, these methods are limited in the problems they can solve. One limitation is our inability to provide many labeled examples since running laboratory experiments or expensive in-silico simulations are often too time and resource-consuming. Another issue is that the output may not be a simple function of its inputs. For instance, when predicting molecular coordinates from molecular graphs, our outputs depend greatly on each other the position of one atom affects that of all others, and therefore a single step function cannot solve such a problem; an iterative approach to optimize these coordinates is required. In such cases where a problem is solved in many steps, there is no notion of the correct result after a single step; we can only score if the composite of steps produces the final result. All these problems necessitate a machine learning method that can produce outputs over several timesteps and be able to reason about the correctness of its outputs based on rewards it may obtain at a different time in our process. This method is Reinforcement Learning. \cite{rl-intro-sutton-barto}
 
 
 \subsubsection{Markov Decision Processes}
 
-% What is environment, state, action
-
-A Markov Decision Processes is any real or simulated process going on in time where each each decision follows the Markovian Property, i.e, any future state transitions or rewards are conditionally independent of the past states and actions given the present state the environment is in.
+A Markov Decision process is any real or simulated process going on in time where each decision follows the Markovian Property, i.e., any future state transitions or rewards are conditionally independent of the past states and actions given the present state the environment is in.
 
 A Markov Decision Process (MDP) can be represented as a tuple $\braket{S, A, T_a(s, s^\prime), R_a(s, s^\prime)}$, where $S$ is the set of all states, $A$ is the set of all actions available from any given state, $T_a(s, s^\prime)$ is the transition model which represents the probability of going from a starting state $s$ to a next state $s^\prime$ given that the action $a$ was taken, and $R_a(s s^\prime)$ is the reward obtained when this transition is realized.
 
-Reinforcement Learning is a method of solving Markov Decision Processes. For our problem to be solved by RL, we need to ensure that our formulation is Markovian, i.e. our state has enough information to, given the action, predict the probability of the next state and the associated reward.
+Reinforcement Learning is a method of solving Markov Decision Processes. For our problem to be solved by RL, we need to ensure that our formulation is Markovian, i.e., our state has enough information to, given the action, predict the probability of the next state and the associated reward.
 
 \subsubsection{Value Function and Policy Function}
 
-At every point in time, our agent has access to the state gets to choose an action, for which it gets a reward and the state of the simulation is updated. 
-This process continues indefinitely until a terminal state is reached, i.e. one where no further progress needs to be made and no future rewards can be collected. This entire trajectory of states and actions together comprises an episode.
+At every point in time, our agent has access to the state and gets to choose an action. For this action, it receives a reward, and the state of the simulation is updated. 
+This process continues indefinitely until a terminal state is reached, i.e., one where no further progress needs to be made and no future rewards can be collected. This entire trajectory of states and actions together comprises an episode.
 
-The agent maintains a function which is called it's \textbf{policy function} $\pi(s, a)$, which given the current state gives the probability of each action it can take from that state. Our agent is allowed to be stochastic for various practical and theoretical reasons, so the probability for more than one action in a given state is allowed to be non-zero. This is the function that we shall attempt to optimize while learning from our environment.
+The agent maintains a function which is called its \textbf{policy function} $\pi(s, a)$, which given the current state, gives the probability of each action it can take from that state. Our agent is allowed to be stochastic for various practical and theoretical reasons, so the probability for more than one action in a given state is allowed to be non-zero. This is the function that we shall attempt to optimize while learning from our environment.
 
-While acting according to any policy function, we can associate which each state what we call the \textbf{value function} $V_{\pi}(s)$, which represents the expected sum of rewards till the end of the episode obtainable by following the policy. The optimal policy function $\pi$ is that which leads to the maximum value function for the starting state.
+While acting according to any policy function, we can associate each state with what we call the \textbf{value function} $V_{\pi}(s)$, which represents the expected sum of rewards till the end of the episode obtainable by following the policy. The optimal policy function $\pi$ leads to the maximum value function for the starting state.
 
-Value-function of one state can be written in terms of that of others, and to compute these values over all the states we need to iteratively apply our updates.
+Value-function of one state can be written in terms of that of others. To compute these values over all the states, we need to apply our updates iteratively.
 
 \begin{equation}
     V(s) = \sum_{a \in A} \pi(s, a) \sum_{s^\prime} T_a(s, s^\prime) (V(s^\prime) + R_a(s, s^\prime))
@@ -290,7 +288,7 @@ In the following sections, we shall see three kinds of models:
 
 \subsubsection{Deep Q-Networks}
 
-The first class of models attempt to approximate the value function. Assuming that our policy function will be that which is optimal, and assuming that our actions are deterministic (i.e. transition probabilities are 1 for the state we result in after an action and 0 otherwise), we can rewrite equation \ref{eqn:defn-q-fn} as:
+The first class of models attempts to approximate the value function. Assuming that our policy function will be that which is optimal, and assuming that our actions are deterministic (i.e., transition probabilities are 1 for the state we result in after an action and 0 otherwise), we can rewrite equation \ref{eqn:defn-q-fn} as:
 \begin{eqnarray}\label{eqn:defn-q-fn}
     Q(s, a) \leftarrow R(s, s^\prime) + \max_{a \in A} Q(s^\prime, a)
 \end{eqnarray}
@@ -305,51 +303,43 @@ The parameters $\theta$ can be updating using gradient based methods. The update
     \end{split}
 \end{equation}
 
-Several improvements to the training efficiency and stability to the DQN algorithm have been made, a few examples are the Double DQN by \cite{double-dqn}. These set of improvements put together have been analyzed by \cite{rainbow-dqn} under the name Rainbow DQN.
+Several improvements to the training efficiency and stability of the DQN algorithm have been made; a few examples are the Double DQN by \cite{double-dqn}. This set of improvements put together has been analyzed by \cite{rainbow-dqn} under the name Rainbow DQN.
 
 \subsubsection{Policy Function Approximators}
 
-The policy function $\pi_\theta(s, a)$ gives the probability of each action given the state. In value function methods, we computed the policy by finding the action with the maximum expected value and assigning it a probability of 1 and other actions 0 for each state. When learning the policy directly, we use a stochastic policy instead, which makes the choice of actions smooth and optimizable.
+The policy function $\pi_\theta(s, a)$ gives the probability of each action given the state. In value function methods, we computed the policy by finding the action with the maximum expected value and assigning it a probability of 1 and other actions 0 for each state. When learning the policy directly, we use a stochastic policy instead, which chooses smooth and optimizable actions.
 
 \paragraph{Reasons to use policy gradients:}
 \begin{enumerate}
-    \item Learning value function may be much harder than learning the relative quality of actions, e.g. given the task of designing molecules with high solubility, and a procedure which keeps adding bonds iteratively, it can be very hard to predict the expected solubility of the molecule formed at the end of trajectories (value function), while predicting that adding a highly polar bond is more beneficial than adding non-polar ones (policy function).
-    \item We might want to obtain a policy which is inherently stochastic, where policy based methods are the better choice. One example is when designing molecules with certain properties, we want a stochastic policy so that we can sample different molecules that optimize on the target property and then rank them based on synthetic ease or the such.
-    \item Many a times, the action space is continuous or intractably large, and maximizing value over all actions is not feasible. Here we can only use policy based methods. Geometry optimization is one example, where the action is predicting the molecular coordinates of a single atom, which leads to a un-countably infinite sized action space.
+    \item Learning value function may be much harder than learning the relative quality of actions. E.g., given the task of designing molecules with high solubility and a procedure that keeps adding bonds iteratively, it can be very hard to predict the expected solubility of the molecule formed at the end of trajectories (value function) while predicting that adding a highly polar bond is more beneficial than adding non-polar ones (policy function).
+    \item We might want to obtain an inherently stochastic policy, where policy-based methods are the better choice. One example is when designing molecules with certain properties, and we want a stochastic policy to sample different molecules that optimize on the target property and then rank them based on synthetic ease or the such.
+    \item Many a time, the action space is continuous or intractably large, and maximizing the value over all the actions is not feasible. Here we can only use policy-based methods. Geometry optimization is one example where the action is predicting the molecular coordinates of a single atom, which leads to an un-countably infinite-sized action space.
 \end{enumerate}
 
 \paragraph{Method}:
-To optimize our policy, we sample trajectories from our policy and increase the probability of actions in trajectories which high reward get increase, and those with lower reward decrease.
+To optimize our policy, we sample trajectories from our policy and increase the probability of actions in trajectories that obtain high rewards and lower the probability of those with lesser rewards.
 
-The utility of our policy is the expected reward under trajectories sampled from this policy, this is the quantity we wish to maximize over the parameters $\theta$. To perform this maximization, we compute $\nabla_\theta U(\theta)$ and update the parameter vector as $\theta \leftarrow \theta + \epsilon \nabla_\theta U(\theta)$. The gradient only depends on the gradient of the log of our policy function scaled by the rewards obtained along the trajectory, and very importantly does not depend on the true transition model. Equation \ref{eqn:policy-grad} follows from a mathematically involved derivation done in \cite{}.
+The utility of our policy is the expected reward under trajectories sampled from this policy; this is the quantity we wish to maximize over the parameters $\theta$. To perform this maximization, we compute $\nabla_\theta U(\theta)$ and update the parameter vector as $\theta \leftarrow \theta + \epsilon \nabla_\theta U(\theta)$. The gradient only depends on the gradient of the log of our policy function scaled by the rewards obtained along the trajectory and, very importantly, does not depend on the true transition model. Equation \ref{eqn:policy-grad} follows from a mathematically involved derivation done in \cite{}.
 
 \begin{equation}\label{eqn:policy-grad}
     \nabla_\theta U(\theta) \leftarrow \frac{1}{m} \sum_{i=1}^{m} \sum_{t=0}^{H-1} \nabla_\theta \log \pi_\theta (u_t^{(i)}|s_t^{(i)}) \Bigg(\sum_{k=t}^{H-1} R(s_k^{(i)}, u_k^{(i)}) - b(s_t^{(i)})\Bigg)
 \end{equation}
 
-\paragraph{Other Nuances}: Despite having the gradient that we need to update along, it's unclear what learning rate we should use to perform said update. Unlike in deep learning where the next iteration would correct if we overstep along the gradient, an overstep in our policy can lead to evaluation over an incorrect policy and can essentially wipe out all we have learnt till now. Trust Region policy optimizations (TRPO) by \cite{trpo} and Proximal Policy Optimizations (PPO) by \cite{ppo} are methods that address this. Furthermore, to increase sample efficiency, Direct Deterministic Policy Gradients (DDPG) by \cite{ddpg} and Soft Actor critic (SAC) \cite{sac} are used. These methods have not seen great application in chemistry but hold great promise given their popularity in other reinforcement learning sub-domains.
+\paragraph{Other Nuances}: Despite having the gradient that we need to update along, it is unclear what learning rate we should use to perform the said update. Unlike in deep learning, where the next iteration would correct if we overstep along the gradient, an overstep in our policy can lead to evaluation over an incorrect policy and can essentially wipe out all we have learned till now. Trust Region policy optimizations (TRPO) by \cite{trpo} and Proximal Policy Optimizations (PPO) by \cite{ppo} are methods that address this. Furthermore, to increase sample efficiency, Direct Deterministic Policy Gradients (DDPG) by \cite{ddpg}, and Soft Actor critic (SAC) \cite{sac} are used. These methods have not seen great application in chemistry but hold great promise given their popularity in other reinforcement learning sub-domains.
 
 \subsubsection{Actor Critic Methods}
 
-In equation \ref{eqn:policy-grad}, we are free to subtract a baseline value $b(s_t^{(i)})$ from the summed up rewards for each action, however this baseline should be independent of the action and can only depend on the state. Subtraction of this baseline leads to lower variance estimates in the value of actions. The network for each action now has to predict a quantity called the advantage, which represents the relative value of the actions and abstracts out the value of the state.
+In equation \ref{eqn:policy-grad}, we are free to subtract a baseline value $b(s_t^{(i)})$ from the summed up rewards for each action; however, this baseline should be independent of the action and can only depend on the state. Subtraction of this baseline leads to lower variance estimates in the value of actions. The network now has to predict a quantity called the advantage. Advantage represents the difference in the value of each action over or below the expected reward obtainable from the state.
 \begin{equation}\label{eqn:advantage}
     A(s, a) = Q(s, a) - V(s)
 \end{equation}
 
-This is implemented in practice using two networks, an actor network, which estimates the values of the actions, and a critic network, that estimates the resultant values of the states which we subtract as baseline from the rewards. These methods are often known to be stabler than their pure policy-gradient counterparts.
+This is implemented in practice using two networks, an actor network, which estimates the values of the actions, and a critic network, which estimates the resultant values of the states, which we subtract as a baseline from the rewards. These methods are often known to be stabler than their pure policy-gradient counterparts.
 
-There are several variants on how the critic network and the explicit rollout together lead to the estimate of the value for each state, which have been discussed in detail by \cite{actor-critic-a2c, actor-critic-a3c, actor-critic-gae}
+There are several variants on how the critic network and the explicit rollout together lead to the estimate of the value for each state, which has been discussed in detail by \cite{actor-critic-a2c, actor-critic-a3c, actor-critic-gae}
 
 \subsubsection{Monte Carlo Tree Search}
 
-When the transition model (next state and reward given action) is known, we can plan explicitly using a tree search. Since tree would grow combinatorially big (molecule generation via such means would have every possible molecule and it's substructure as a node in the tree), we use reinforcement learning to find out the most promising nodes. Monte Carlo Tree Search is one such method, which has gained prominence due to it's use in AlphaGo by \cite{mcts-alphago} to play Go and in AlphaZero by \cite{mcts-alphazero} to play Chess, Go, and other games with no human supervision during training. 
+When the transition model (next state and reward given action) is known, we can plan explicitly using a tree search. Since the tree would grow combinatorially big (molecule generation via such means would have every possible molecule and its substructure as a node in the tree), we use reinforcement learning to find the most promising nodes. Monte Carlo Tree Search is one such method, which has gained prominence due to its use in AlphaGo by \cite{mcts-alphago} to play Go and in AlphaZero by \cite{mcts-alphazero} to play Chess, Go, and other games with no human supervision during training. 
 
-MCTS has been used in extensively chemistry wherever the exact transition model is known, in problems like Molecule Generation and Reaction path prediction. 
-
-
-
-% Progress in computational techniques and speed is intimately tied to the furtherance of scientific inquiry. Over the past many decades, we have built computers that can simulate systems better and search for courses of action to modify the evolution of these systems to human advantage. In this endeavor, the manifold increase in computational speed and memory has helped us to date, but now that computational components have reached the size of atoms, we seem to be on the verge of meeting a hard limit. Therefore, we have started to look towards other paradigms to develop computers more suited to performing simulations of nature. Quantum computing, the idea of using the fundamental quantum nature of the universe to simulate itself but in much greater generality, has held the most promise.
-
-% Richard Feynman said: “Nature isn't classical, dammit, and if you want to make a simulation of nature, you'd better make it quantum mechanical, and by golly it's a wonderful problem, because it doesn't look so easy.” \cite{feynman-quantum-simulating-physics}
-
-% Though Quantum Computers are realizable even today, the devices in the present day are said to be a part of the Noisy Intermediate-Scale Quantum era (NISQ). Presently, the quantum bits and operations are noisy and lack the reliability to perform any computation infeasible on classical computers of the day.
+MCTS has been used extensively in chemistry wherever the exact transition model is known, in problems like Molecule Generation and Reaction path prediction. 
