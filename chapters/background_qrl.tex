@@ -154,7 +154,7 @@ There are many ways of performing Hamiltonian simulation on general-purpose gate
 \begin{itemize}
     \item Using Trotterization: Given a hamiltonian which can be represented as a linear combination of local Hamiltonians, $H = A + B + C$, the trotter decomposition of Unitary corresponding to the Hamiltonian can be approximated by
     \begin{equation}
-        U = e^{-i H t} = (e^{-i A t / r} e^{-i A t / r} e^{-i A t / r})^r
+        U = e^{-i H t} = (e^{-i A t / r} e^{-i B t / r} e^{-i C t / r})^r
     \end{equation}
     For larger values of $r$ this results in a pretty accurate simulation.
     \item Using Taylor Expansion of Hamiltonian: The Hamiltonian can be expanded out as a sum of unitaries, and then the corresponding unitary can be taylor-series expanded out as a linear combination of the unitaries corresponding to terms of the Taylor expansion.
@@ -239,11 +239,11 @@ Variational Quantum Algorithms is another entry in the class of variation algori
 
 \subsection{What is Reinforcement Learning}
 
-Machine Learning and all associated sub-disciplines are motivated by the goal of achieving artificial general intelligence, that is, being able to mimic the human mind and even surpass its capacity to perceive, compute and actuate. The human mind deals with various problems differing greatly in their phrasing, the solutions they admit, etc. Of this host of problem types, 
+Machine Learning and all associated sub-disciplines are motivated by the goal of achieving artificial general intelligence, that is, being able to mimic the human mind and even surpass its capacity to perceive, compute and actuate. The human mind deals with various problems differing greatly in their phrasing, the solutions they admit, etc. This host of problem types requires many different types of learning methods in various settings.
 
-Deep Learning is an extremely powerful and popular one of these methods, which uses parameterized function approximators (aka. neural networks) to learn arbitrary functions directly from examples. We typically learn functions that take as input numerical data and associated structure (e.g., graphs) and produce one or many continuous-valued outputs (regression) or discrete-value outputs (classification). This has been employed with great success in computational chemistry, for instance, in predicting properties of molecules like solubility, smell, energy, etc.
+Deep Learning is an extremely powerful and popular one of these methods, which uses parameterized function approximators (aka. neural networks) to learn arbitrary functions directly from examples. We typically learn functions that take as input numerical data and associated structure (e.g., graphs) and produce one or many continuous-valued outputs (regression) or discrete-value outputs (classification). This has been employed with great success in tasks like image recognition, text generation, etc.
 
-Despite all their predictive power, these methods are limited in the problems they can solve. One limitation is our inability to provide many labeled examples since running laboratory experiments or expensive in-silico simulations are often too time and resource-consuming. Another issue is that the output may not be a simple function of its inputs. For instance, when predicting molecular coordinates from molecular graphs, our outputs depend greatly on each other the position of one atom affects that of all others, and therefore a single step function cannot solve such a problem; an iterative approach to optimize these coordinates is required. In such cases where a problem is solved in many steps, there is no notion of the correct result after a single step; we can only score if the composite of steps produces the final result. All these problems necessitate a machine learning method that can produce outputs over several timesteps and be able to reason about the correctness of its outputs based on rewards it may obtain at a different time in our process. This method is Reinforcement Learning. \cite{rl-intro-sutton-barto}
+Despite all their predictive power, these methods are limited in the problems they can solve. One limitation is our inability to provide many labeled examples since running laboratory experiments or expensive in-silico simulations are often too time and resource-consuming. Another issue is that the output may not be a simple function of its inputs. For instance, when predicting a compilation output to take at each step, our action chosen depends greatly on other actions scheduled, and therefore a single step function cannot solve such a problem; an iterative approach to optimize these coordinates is required. In such cases where a problem is solved in many steps, there is no notion of the correct result after a single step; we can only score if the composite of steps produces the final result. All these problems necessitate a machine learning method that can produce outputs over several timesteps and be able to reason about the correctness of its outputs based on rewards it may obtain at a different time in our process. This method is Reinforcement Learning. \cite{rl-intro-sutton-barto}
 
 
 \subsubsection{Markov Decision Processes}
@@ -311,9 +311,9 @@ The policy function $\pi_\theta(s, a)$ gives the probability of each action give
 
 \paragraph{Reasons to use policy gradients:}
 \begin{enumerate}
-    \item Learning value function may be much harder than learning the relative quality of actions. E.g., given the task of designing molecules with high solubility and a procedure that keeps adding bonds iteratively, it can be very hard to predict the expected solubility of the molecule formed at the end of trajectories (value function) while predicting that adding a highly polar bond is more beneficial than adding non-polar ones (policy function).
-    \item We might want to obtain an inherently stochastic policy, where policy-based methods are the better choice. One example is when designing molecules with certain properties, and we want a stochastic policy to sample different molecules that optimize on the target property and then rank them based on synthetic ease or the such.
-    \item Many a time, the action space is continuous or intractably large, and maximizing the value over all the actions is not feasible. Here we can only use policy-based methods. Geometry optimization is one example where the action is predicting the molecular coordinates of a single atom, which leads to an un-countably infinite-sized action space.
+    \item Learning value function may be much harder than learning the relative quality of actions. E.g., when compiling a circuit, it is tough to ascertain the value function of the state, which would correspond to the number of timesteps it would take to compile the remainder of the circuit; it's much easier to decide what action would best help make progress in the circuit compilation task. 
+    \item We might want to obtain an inherently stochastic policy, where policy-based methods are the better choice. This often happens when we want to sample different action choices from our algorithm and rank them later.
+    \item Many a time, the action space is continuous or intractably large, and maximizing the value over all the actions is not feasible. Here we can only use policy-based methods. The routing problem's action space fits the bill for this.
 \end{enumerate}
 
 \paragraph{Method}:
@@ -325,7 +325,7 @@ The utility of our policy is the expected reward under trajectories sampled from
     \nabla_\theta U(\theta) \leftarrow \frac{1}{m} \sum_{i=1}^{m} \sum_{t=0}^{H-1} \nabla_\theta \log \pi_\theta (u_t^{(i)}|s_t^{(i)}) \Bigg(\sum_{k=t}^{H-1} R(s_k^{(i)}, u_k^{(i)}) - b(s_t^{(i)})\Bigg)
 \end{equation}
 
-\paragraph{Other Nuances}: Despite having the gradient that we need to update along, it is unclear what learning rate we should use to perform the said update. Unlike in deep learning, where the next iteration would correct if we overstep along the gradient, an overstep in our policy can lead to evaluation over an incorrect policy and can essentially wipe out all we have learned till now. Trust Region policy optimizations (TRPO) by \cite{trpo} and Proximal Policy Optimizations (PPO) by \cite{ppo} are methods that address this. Furthermore, to increase sample efficiency, Direct Deterministic Policy Gradients (DDPG) by \cite{ddpg}, and Soft Actor critic (SAC) \cite{sac} are used. These methods have not seen great application in chemistry but hold great promise given their popularity in other reinforcement learning sub-domains.
+\paragraph{Other Nuances}: Despite having the gradient that we need to update along, it is unclear what learning rate we should use to perform the said update. Unlike in deep learning, where the next iteration would correct if we overstep along the gradient, an overstep in our policy can lead to evaluation over an incorrect policy and can essentially wipe out all we have learned till now. Trust Region policy optimizations (TRPO) by \cite{trpo} and Proximal Policy Optimizations (PPO) by \cite{ppo} are methods that address this. Furthermore, to increase sample efficiency, Direct Deterministic Policy Gradients (DDPG) by \cite{ddpg}, and Soft Actor critic (SAC) \cite{sac} are used.
 
 \subsubsection{Actor Critic Methods}
 
@@ -340,6 +340,6 @@ There are several variants on how the critic network and the explicit rollout to
 
 \subsubsection{Monte Carlo Tree Search}
 
-When the transition model (next state and reward given action) is known, we can plan explicitly using a tree search. Since the tree would grow combinatorially big (molecule generation via such means would have every possible molecule and its substructure as a node in the tree), we use reinforcement learning to find the most promising nodes. Monte Carlo Tree Search is one such method, which has gained prominence due to its use in AlphaGo by \cite{mcts-alphago} to play Go and in AlphaZero by \cite{mcts-alphazero} to play Chess, Go, and other games with no human supervision during training. 
+When the transition model (next state and reward given action) is known, we can plan explicitly using a tree search. Since the tree would grow combinatorially big, we use reinforcement learning to find the most promising nodes. Monte Carlo Tree Search is one such method, which has gained prominence due to its use in AlphaGo by \cite{mcts-alphago} to play Go and in AlphaZero by \cite{mcts-alphazero} to play Chess, Go, and other games with no human supervision during training. 
 
-MCTS has been used extensively in chemistry wherever the exact transition model is known, in problems like Molecule Generation and Reaction path prediction. 
+The use of MCTS for Qubit Routing is discussed in much greater detail in the following chapter.
