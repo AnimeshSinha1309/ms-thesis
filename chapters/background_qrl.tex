@@ -2,16 +2,16 @@ This chapter introduces the basics of quantum computing and reinforcement learni
 
 We start with a brief introduction of the quantum computation model and its mathematical and geometric formalism and introduce the circuit model of computation. 
 
-Next, we start a discussion on Quantum Algorithms, starting with pure quantum algorithms like Grover's, Shor's, and Hamiltonian simulation and moving on to Variational Methods like QAOA (Quantum Approximate Optimization Algorithm) and VQE (Variational Quantum Eigensolver). The compilation and visualization of these algorithms form the basis of the work presented in this thesis. Both our algorithms have been tested extensively on some subset of these circuits. There are a small number of such subroutines that have currently been discovered in quantum algorithmic theory, and these subroutines are often and repeatedly used, motivating the value of performing routing as close to optimally as possible on these circuits (Routing results on these algorithmic benchmarks as setup by IBM are listed in \ref{ch:appendix-qroute}). The QAOA algorithm for max-cut is also our test-bed for analyzing and visualizing the learning properties of these variational circuits.
+Next, we discuss Quantum Algorithms, starting with pure quantum algorithms like Grover's, Shor's, and Hamiltonian simulation and move on to Variational Methods like QAOA (Quantum Approximate Optimization Algorithm) and VQE (Variational Quantum Eigensolver). The compilation and visualization of these algorithms form the basis of the work presented in this thesis. Both our algorithms have been tested extensively on some subset of these circuits. There are a small number of such subroutines that have currently been discovered in quantum algorithmic theory, and these subroutines are often and repeatedly used, motivating the value of using machine learning methods which can exploit recurring patterns to perform quantum circuit transformations as close to optimally as possible (Qubit routing results on these algorithmic benchmarks as setup by IBM are listed in \ref{ch:appendix-qroute}). The QAOA algorithm for max-cut is also our test-bed for analyzing and visualizing the learning properties of these variational circuits.
 
-Finally, we move to a didactic introduction to reinforcement learning the different settings like Value-based, Policy-based, etc. We add some mathematical/algorithmic details to those settings and algorithms relevant to our work, like Actor-Critic methods, Monte Carlo Tree Search, etc.
+Finally, we move to a didactic introduction to reinforcement learning by talking about the different learning frameworks in the field like Value-based, Policy-based, etc. We discuss the algorithmic details of those methods that are relevant to our work, like Deep-Q-learning, Policy Gradients, Actor-Critic, and Monte Carlo Tree Search.
 
 \section{Quantum Computation}
 
 
 \subsection{Qubits and Quantum Computation Model}
 
-Quantum Computers store information as quantum bits, or qubits. These qubits can be evolved by operating on them with unitary operators, also called gates. The gate model of computation is rather familiar; the following is a diagrammatic illustration of the same:
+Quantum Computers store information as quantum bits, or qubits. These qubits evolve through the application of unitary operators, also called gates. The gate model of quantum computation is akin to that on classical computers; the following is a diagrammatic illustration of the same:
 
 \begin{figure}[ht]
     \centering
@@ -23,7 +23,7 @@ Quantum Computers store information as quantum bits, or qubits. These qubits can
 
 A classical bit can be either 0 or 1. However, a qubit can live in any state inbetween 0 or 1, which is understood as being in a weighted superposition of the 0 and 1 states. So the state of a qubit 
 \begin{equation}
-    \ket{\psi} = \alpha \ket{0} + \beta \ket{1} = \begin{bmatrix}\alpha \\ \beta\end{bmatrix} \;\;\text{such that }\alpha^2 + \beta^2 = 1 \text{ and } \alpha, \beta \in \mathbb{C}
+    \ket{\psi} = \alpha \ket{0} + \beta \ket{1} = \begin{bmatrix}\alpha \\ \beta\end{bmatrix} \;\;\text{such that }\alpha^* \alpha + \beta^* \beta = 1 \text{ and } \alpha, \beta \in \mathbb{C}
 \end{equation}
 where the normalization of probabilities forces. However this state of the qubit is not accessible to us, and we can only measure the qubit probabilistically, with probability of being $\ket{0}$ being $\alpha^2$ and that of $\ket{1}$ being $\beta^2$.
 
@@ -40,12 +40,17 @@ Each qubit, in addition to the superposition it is in, also has a phase term, wh
 \subsection{Unitaries, Gates, and Entanglement}
 \label{sec:background-unitary-gate-entanglement}
 
-The state of a system of qubits can be modified by applying unitary gates on those qubits.
+The state of a system of qubits can be modified by gates. The  gates that can executed on a quantum computer are those that apply norm-preserving linear transforms on the state vector.
+\begin{equation}
+    \ket{\psi_1^\prime \otimes \psi_2^\prime \otimes \ldots \otimes \psi_n^\prime} = U_{2^n \times 2^n} \ket{\psi_1 \otimes \psi_2 \otimes \ldots \otimes \psi_n}
+\end{equation}
+When we transform the state as $\ket{\psi} \rightarrow \ket{U \psi}$, the norm of the state transforms as $\braket{\psi | \psi} \rightarrow \braket{\psi U^\dagger U \psi}$. To ensure that norm is preserved, we need the $U^\dagger U = \mathbb{I}$, so all gates on quantum computers must be unitaries.
+
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\linewidth]{figures/quantum/quantum_logic_gates.png}
-    \caption[List of Logic Gates]{Popular logic gates along with their in-circuit representations and corresponding unitary matrices.}
+    \caption[List of Logic Gates]{Popular logic gates along with their in-circuit representations and corresponding unitary matrices. $X$, $Y$, $X$, $H$, $S$, $P$ and $T$ are all single qubit gates. $X$ is a $180^o$ rotation of the bloch sphere around the $X$ axis, same with $Y$ and $Z$. $R_x(\theta) = e^{-i X \theta / 2}$ is a rotation of $\theta$ angle around the X-axis, same with the other axes. $CX$ is a controlled form of the $X$ gate, where one qubit participating in the operation is the controller, and if it's in the $\ket{1}$ state then $X$ gate will be applied on the qubit, and not if it was in the $\ket{0}$ state. Such gates result in the two qubits becoming entangled, other controlled gates are $CNOT$ (controlled version of $Z$), $CR_x(\theta)$ (Controlled version of rotation along $X$), etc. \cite{book-nielsen-chuang}}
     \label{fig:quantum-unitary-gates}
 \end{figure}
 
@@ -59,7 +64,7 @@ State preparation on a quantum computer is subject to noise. Therefore there oft
     \rho = \sum_{i} p_i \ket{x_i} \bra{x_i}
 \end{equation}
 
-Much like unitary operations on state vectors, the application of unitaries on density matrices can be represented through simple matrix multiplication:
+Much like unitary operations on state vectors (\ref{sec:background-unitary-gate-entanglement}), the application of unitaries on density matrices can be represented through simple matrix multiplication:
 \begin{equation}
     \mathcal{O} (\rho) = \sum_i p_i \mathcal{O}(\ket{x_i}) \mathcal{O}(\bra{x_i}) = \sum_i p_i U \ket{x_i} \bra{x_i} U^\dagger = U \rho U^\dagger
 \end{equation}
@@ -72,19 +77,21 @@ Much like unitary operations on state vectors, the application of unitaries on d
 
 Superposition and Entanglement together provide quantum computers with natural parallel processing power. While full access to this parallelism gets bottlenecked at the measurement layer since we can sample only one of the many states in weighted superposition, it is conceivable that for many an algorithm, this parallelism can result in a processing speed-up. A near-term goal with Quantum Computers is to achieve quantum supremacy, which is to solve a problem (possibly one of no practical use) that no classical computer can solve in a feasible amount of time. \cite{quantum-complexity-survey}
 
+The algorithms developed for quantum computation till date can be categorized into just 3 classes \cite{quantum-algo-shor-3-classes}, listed below:
 \begin{itemize}
     \item Grover Like (Amplitude Amplification class of algorithms).
-    \item Shor's Like (Using Quantum Phase Estimation and Quantum Fourier Transform)
+    \item Shor Like (Using Quantum Phase Estimation and Quantum Fourier Transform)
     \item Hamiltonian Simulation 
 \end{itemize}
+All algorithms in each class share the subroutines which are the primary cause of the quantum speedup. Below we describe these three classes of algorithms in some detail.
 
 \subsubsection{Grover's Search}
 
-Grover's search is an algorithm to search in an unordered list of size $n$ in $\sqrt{n}$ time proposed by Grover in 1996 \cite{grover-search-original}.
+Grover's search is an algorithm to search for some target element or set of elements in an unordered list of size $n$ in $\sqrt{n}$ time proposed by Grover in 1996 \cite{grover-search-original}.
 
-\paragraph*{The Problem}: Grover attacks the problem of unstructured search, where we have a list of $n$ elements in any permutation, and we have an oracle that marks each of these elements $1$, which is one of the results of the search procedure we wished to find, or as $0$ which is for those elements which were not one of those elements. We are told that the oracle only returns a value of $1$ for some $m$ of those elements, where $m << n$.
+\paragraph*{The Problem}: Grover attacks the problem of unstructured search, where we have a list of $n$ elements in any permutation, and we have an oracle that marks each of these elements $1$ if it is one of the results of the search procedure we wish to find, or as $0$ if it is not one of those elements. The oracle only returns a value of $1$ for some $m$ of those elements, where $m << n$.
 
-\paragraph*{Overview of the Algorithm}: Following is a brief explanation of how the Grover's Algorithm operates:
+\paragraph*{Overview of the Algorithm}: Following is a brief explanation of how Grover's Algorithm operates:
 
 \begin{enumerate}
     \item \textbf{Preparing the initial superposition of bitstrings:} The initial state should be the superposition of all elements in our search domain. Since these are the indices of the elements we are searching over, we can take this to be an equal superposition of all basis states, constructed by applying the hadamard gate over all qubits.
@@ -92,7 +99,7 @@ Grover's search is an algorithm to search in an unordered list of size $n$ in $\
         \ket{x} = \ket{s} = \frac{1}{\sqrt{n}} \sum_{i=1}^{n} \ket{b_i}
     \end{equation}
 
-    \item \textbf{Application of a phase-kickback oracle:} For any input state $\ket{x}$, if it is a valid solution (i.e. $f(x) = 1$), then the oracle that bitstring with a negative phase. If $\ket{x}$ is not a basis state but rather is a superposition of states, then the oracle operates on each basis component of the state independently as shown in equation. \ref{eqn:grover-oracle}
+    \item \textbf{Application of a phase-kickback oracle:} For any input state $\ket{x}$, if it is a valid solution (i.e. $f(x) = 1$), then the oracle applies to that bitstring a negative phase factor. If $\ket{x}$ is not a basis state but rather is a superposition of states, then the oracle operates on each basis component of the state independently as shown in equation. \ref{eqn:grover-oracle}
     \begin{equation}\label{eqn:grover-oracle}
         \mathcal{O} \big(\ket{x} \big) = \mathcal{O}\bigg(\sum_i w_i(x) \ket{b_i} \bigg) = \sum_i w_i(x) \begin{cases}
             -\ket{b_i} & \text{if } f(b_i) = 1 \\
@@ -116,7 +123,7 @@ Shor's Algorithm is used to perform factorization of an integer product of two l
 
 \paragraph*{The problem}: Given an integer that is known to be the product of two large prime numbers, we have to factor the number back into the composing integers.
 
-\paragraph*{Overview of the Algorithm}: Following is a brief explanation of how the Shor's Algorithm works:
+\paragraph*{Overview of the Algorithm}: Following is a brief explanation of how Shor's Algorithm works:
 
 \begin{enumerate}
     \item \textbf{Preparing the Unitary}: We need to model a unitary operator which performs modular multiplication by some constant $a$.
@@ -131,18 +138,18 @@ Shor's Algorithm is used to perform factorization of an integer product of two l
     \begin{equation}
         U \ket{u_s} = e^{\frac{2 \pi i s}{r}} \ket{u_s}
     \end{equation}
-    \item \textbf{Period Finding to Factorization}: We compute the phase $\frac{s}{r}$ from the process above. Using this, we can generate a fractional approximation to the phase and estimate the value of r. Now we know that
+    \item \textbf{Period Finding to Factorization}: We compute the phase $\frac{s}{r}$ from the process above. Using this, we can generate a fractional approximation to the phase and estimate the value of r. We know that
     \begin{equation}
         a^r \mod N = 1
     \end{equation}
-    With high probability, r will be even, if it's not we will repeat this process with a new a. Given the above, we can guess a factor of $N$ as $a^{r/2} - 1$ or $a^{r/2} + 1$.
+    With high probability, r is even; if it's not then we will repeat this process with a new a. Given the above, we can guess a factor of $N$ as $a^{r/2} - 1$ or $a^{r/2} + 1$.
     \begin{equation}
         (a^{r/2} - 1) (a^{r/2} + 1) \mod N = 0
     \end{equation}
     Having ensured initially that $a$ is not a factor of $N$, we have found a high-probability guess for the factors being one of these two numbers. We repeat this process until this guess turns out to be correct.
 \end{enumerate}
 
-\paragraph*{Other Comments}: Shor's Algorithm provides an exponential advantage over any known classical algorithm, but at the moment, it demands too many qubits, and it demands that fault tolerance be implemented, which is presently infeasible. An entire class of Quantum Algorithms takes inspiration from this use of period finding using the Quantum Phase Estimation process, and one prominent example is the HHL algorithm for solving linear systems.
+\paragraph*{Other Comments}: Shor's Algorithm provides an exponential advantage over any known classical algorithm, it demands too many qubits, and that fault tolerance be implemented; these are at present infeasible. An entire class of Quantum Algorithms takes inspiration from this use of period finding using the Quantum Phase Estimation process, and one prominent example is the HHL algorithm \cite{quantum-algo-hhl} for solving linear systems.
 
 \subsubsection{Hamiltonian Simulation}
 
@@ -169,7 +176,7 @@ There are many ways of performing Hamiltonian simulation on general-purpose gate
 \subsection{Variational Circuits}
 \label{sec:variational-circuits}
 
-In the previous section, we have discussed purely quantum algorithms, which possess an advantage over their presently classical competitors but need fault-tolerant quantum computers with many qubits to be executed.
+In the previous section, we have discussed purely quantum algorithms, which possess an advantage over their present classical competitors but need fault-tolerant quantum computers with many qubits to be executed.
 
 In this section, we look at a few hybrid quantum-classical optimization algorithms, called variational quantum algorithms. 
 
@@ -181,29 +188,29 @@ Each optimization problem is solved over a parameter space and attempts to maxim
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\linewidth]{figures/intro/qaoa-optimization.png}
-    \caption[Variational Circuit for QAOA]{An example of a QAOA circuit with $p = 1$ blocks and generated to compute max-cut on a graph with 3-nodes and 2-edges between (0, 2) and (1, 0). The state generated by the circuit is parameterized in terms of the five parameters in the circuit. The output along the z-axis is measured and used to compute the classical loss value, i.e., the size of the max-cut given to which each node (represented by a qubit) belongs. Finally, a classical optimizer is used to reduce the value of the loss function such that }
+    \caption[Variational Circuit for QAOA]{An example of a QAOA circuit with $p = 1$ blocks and generated to compute max-cut on a graph with 3-nodes and 2-edges between (0, 2) and (1, 0). The state generated by the circuit is parameterized in terms of the five parameters in the circuit. The output along the z-axis is measured and used to compute the classical loss value, i.e., the size of the max-cut given to which each node (represented by a qubit) belongs. Finally, a classical optimizer is used to reduce the value of the loss function such that resulting ansatz from the optimization process represents the cut of minimum size.}
 \end{figure}
 
-Quantum Approximate Optimization Algorithms are a class of variational quantum algorithms used as a general-purpose hammer to solve combinatorial optimization problems probabilistically.
+Quantum Approximate Optimization Algorithms are a class of variational quantum algorithms used as a general-purpose hammer to solve combinatorial optimization problems probabilistically \cite{qaoa-max-cut-farhi}.
 
 \paragraph*{Motivation for the Algorithm}: The Algorithm takes inspiration from adiabatic quantum computing, which is a method that does the following: We start with a quantum state that is an easily preparable ground state of some Hamiltonian, and we vary this Hamiltonian sufficiently slowly and try to reach some target Hamiltonian, then the given quantum state will also track the ground state of the current form of the Hamiltonian. So the result of the Algorithm, if performed slowly enough, will be the ground state of the target Hamiltonian the preparation of which might not have been obvious otherwise.
 
-QAOA takes that philosophy to the gate-computation model and uses the trotter decomposition to approximate the application of unitaries corresponding to these Hamiltonians for sufficiently short periods of time.
+QAOA takes that philosophy to the gate-computation model and uses the Suzuki-Trotter \cite{method-suzuki-trotter-decomposition} decomposition to approximate the application of unitaries corresponding to these Hamiltonians for sufficiently short periods of time.
 
 \paragraph*{Algorithm}: The following steps are performed to execute QAOA for a given optimization problem.
 \begin{enumerate}
     \item \textbf{Prepare the initial state}: We start by applying a Hadamard on all qubits to create an initial state which is an equal superposition of all basis states.
-    \item \textbf{Apply the mixing unitary}: The mixing unitary corresponds to the mixing Hamiltonian, which is the Hamiltonian for which the initial state we have prepared is a ground state.
+    \item \textbf{Apply the mixing unitary}: The mixing unitary corresponds to the mixing Hamiltonian as follows.
     \begin{equation}
         U(H_B) = e^{-i \beta H_B}
     \end{equation}
-    The mixer hamiltonian, therefore, is $X^{\otimes N}$, and the corresponding unitary becomes $R_x(\beta)^{\otimes N}$.
+    We choose the mixer hamiltonian to be $X^{\otimes N}$, and the corresponding unitary becomes $R_x(\beta)^{\otimes N}$. This is because the ground state of this hamiltonian is known to be the initial state that we have prepared.
     \item \textbf{Apply the problem Hamiltonian}: The problem unitary corresponds to the Hamiltonian formulation of our problem, and this is the Hamiltonian for which we are attempting to find the ground eigenstate.
     \begin{equation}
         U(H_P) = e^{-i \gamma H_P}
     \end{equation}
-    This has to be phrased for each problem.
-    \item \textbf{Repeat for p iterations}: We present the mixing-Hamiltonian problem-Hamiltonian process for p-iterations. Each player is a $\beta$-duration mixing Hamiltonian and a $\gamma$-duration problem Hamiltonian application. For tuned values of $\beta$ and $\gamma$ and sufficiently large $p$, this can be made to approximate adiabatic computing.
+    The hamiltonian needs to be formulated for each problem individually.
+    \item \textbf{Repeat for p iterations}: We execute the mixing-Hamiltonian problem-Hamiltonian process for p-iterations. Each player is a $\beta$-duration mixing Hamiltonian and a $\gamma$-duration problem Hamiltonian application. For tuned values of $\beta$ and $\gamma$ and sufficiently large $p$, this can be made to approximate adiabatic computing.
     \item \textbf{Measure and classically compute loss}: The loss value that we are attempting to optimize is the following:
     \begin{equation}\label{eqn:loss-qaoa-circuit}
         \mathcal{L} = \braket{\psi(\beta, \gamma) \vert H_p \vert \psi(\beta, \gamma)}
@@ -224,7 +231,7 @@ Since the Pauli-Z operator on the $\ket{0}$ and $\ket{1}$ state acts similar to 
 \end{equation}
 This can be efficiently implemented in a circuit, which will be used as the problem unitary.
 
-\paragraph*{Other applications}: The QAOA algorithm can be further used to solve approximately other problems, including those that are NP-complete such as Weighted Max-Cut, 3-SAT, Travelling Salesman problem, amongst others. On the problem of Max-Cut, QAOA had, for a short span of about 3-months, held the best approximation ratio until it was superseded by semi-definite programming. Even though QAOA may not be able to be within the bounds achievable by classical computers, the universality of its applicability is remarkable. Coming up with classical methods to outperform QAOA on every new task takes much effort, semi-definite programming solutions have proven to be the best bet to outperform QAOA, but they have to be formulated afresh for each problem. Therefore, as a general-purpose solution to many problems, QAOA stands as a very good bet.
+\paragraph*{Other applications}: The QAOA algorithm can be further used to solve approximately other problems, including those that are NP-complete such as Weighted Max-Cut, 3-SAT, Travelling Salesman problem, amongst others. On the problem of Max-Cut, QAOA had, for a short span of about 3-months, held the best approximation ratio (\cite{qaoa-max-cut-farhi}) until it was superseded by semi-definite programming. Even though QAOA may not be able to be within the bounds achievable by classical computers, the universality of its applicability is remarkable. Coming up with classical methods to outperform QAOA on every new task takes much effort, semi-definite programming solutions have proven to be the best bet to outperform QAOA, but they have to be formulated afresh for each problem. Therefore, as a general-purpose solution to many problems, QAOA stands as a very good bet.
 
 
 \subsection{Variational Quantum Eigensolvers}
@@ -270,9 +277,10 @@ Value-function of one state can be written in terms of that of others. To comput
 \end{equation}
 
 Instead of associating a value with each state, we can associate it with a state-action pair. This function is called the Q-function, and it carries equivalent information to the value function.
-\begin{eqnarray}\label{eqn:defn-q-v-fn}
+\begin{eqnarray}
     Q(s, a) &=& \sum_{s^\prime} T_a(s, s^\prime) \bigg(R(s, s^\prime) + V(s^\prime) \bigg)\\
             &=& \sum_{s^\prime} T_a(s, s^\prime) \bigg(R(s, s^\prime) + \sum_{a \in A} \pi(s^\prime, a) Q(s^\prime, a)\bigg)
+            \label{eqn:defn-q-v-fn}
 \end{eqnarray}
 
 \subsection{Reinforcement Learning Algorithms}
@@ -288,14 +296,14 @@ In the following sections, we shall see three kinds of models:
 
 \subsubsection{Deep Q-Networks}
 
-The first class of models attempts to approximate the value function. Assuming that our policy function will be that which is optimal, and assuming that our actions are deterministic (i.e., transition probabilities are 1 for the state we result in after an action and 0 otherwise), we can rewrite equation \ref{eqn:defn-q-fn} as:
+The first class of models attempts to approximate the value function. Assuming that our policy function will be that which is optimal, and assuming that our actions are deterministic (i.e., transition probabilities are 1 for the state we result in after an action and 0 otherwise), we can rewrite equation \ref{eqn:defn-q-v-fn} as:
 \begin{eqnarray}\label{eqn:defn-q-fn}
     Q(s, a) \leftarrow R(s, s^\prime) + \max_{a \in A} Q(s^\prime, a)
 \end{eqnarray}
 
 For almost all problems in the real world, the state space is too large to maintain explicitly. Therefore we use a parameterized function $Q_{\theta}$, typically a neural network, to approximate the q-value from any given state-action pair.
 
-The parameters $\theta$ can be updating using gradient based methods. The update operation in equation \ref{eqn:q-update} is 
+The parameters $\theta$ can be updating using gradient based methods. The update operation is shown in equation \ref{eqn:q-update}.
 \begin{equation}
     \label{eqn:q-update}
     \begin{split}
@@ -310,22 +318,24 @@ Several improvements to the training efficiency and stability of the DQN algorit
 The policy function $\pi_\theta(s, a)$ gives the probability of each action given the state. In value function methods, we computed the policy by finding the action with the maximum expected value and assigning it a probability of 1 and other actions 0 for each state. When learning the policy directly, we use a stochastic policy instead, which chooses smooth and optimizable actions.
 
 \paragraph{Reasons to use policy gradients:}
+
+Following are the benefits of attempting to learn the policy directly instead of attempting to learn the value function and the policy through it:
 \begin{enumerate}
     \item Learning value function may be much harder than learning the relative quality of actions. E.g., when compiling a circuit, it is tough to ascertain the value function of the state, which would correspond to the number of timesteps it would take to compile the remainder of the circuit; it's much easier to decide what action would best help make progress in the circuit compilation task. 
     \item We might want to obtain an inherently stochastic policy, where policy-based methods are the better choice. This often happens when we want to sample different action choices from our algorithm and rank them later.
     \item Many a time, the action space is continuous or intractably large, and maximizing the value over all the actions is not feasible. Here we can only use policy-based methods. The routing problem's action space fits the bill for this.
 \end{enumerate}
 
-\paragraph{Method}:
+\paragraph{Method:}
 To optimize our policy, we sample trajectories from our policy and increase the probability of actions in trajectories that obtain high rewards and lower the probability of those with lesser rewards.
 
-The utility of our policy is the expected reward under trajectories sampled from this policy; this is the quantity we wish to maximize over the parameters $\theta$. To perform this maximization, we compute $\nabla_\theta U(\theta)$ and update the parameter vector as $\theta \leftarrow \theta + \epsilon \nabla_\theta U(\theta)$. The gradient only depends on the gradient of the log of our policy function scaled by the rewards obtained along the trajectory and, very importantly, does not depend on the true transition model. Equation \ref{eqn:policy-grad} follows from a mathematically involved derivation done in \cite{}.
+The utility of our policy is the expected reward under trajectories sampled from this policy; this is the quantity we wish to maximize over the parameters $\theta$. To perform this maximization, we compute $\nabla_\theta U(\theta)$ and update the parameter vector as $\theta \leftarrow \theta + \epsilon \nabla_\theta U(\theta)$. The gradient only depends on the gradient of the log of our policy function scaled by the rewards obtained along the trajectory and, very importantly, does not depend on the true transition model. Equation \ref{eqn:policy-grad} follows from a mathematically involved derivation done in \cite{policy-grad-theorem}.
 
 \begin{equation}\label{eqn:policy-grad}
     \nabla_\theta U(\theta) \leftarrow \frac{1}{m} \sum_{i=1}^{m} \sum_{t=0}^{H-1} \nabla_\theta \log \pi_\theta (u_t^{(i)}|s_t^{(i)}) \Bigg(\sum_{k=t}^{H-1} R(s_k^{(i)}, u_k^{(i)}) - b(s_t^{(i)})\Bigg)
 \end{equation}
 
-\paragraph{Other Nuances}: Despite having the gradient that we need to update along, it is unclear what learning rate we should use to perform the said update. Unlike in deep learning, where the next iteration would correct if we overstep along the gradient, an overstep in our policy can lead to evaluation over an incorrect policy and can essentially wipe out all we have learned till now. Trust Region policy optimizations (TRPO) by \cite{trpo} and Proximal Policy Optimizations (PPO) by \cite{ppo} are methods that address this. Furthermore, to increase sample efficiency, Direct Deterministic Policy Gradients (DDPG) by \cite{ddpg}, and Soft Actor critic (SAC) \cite{sac} are used.
+\paragraph{Other Nuances:} Despite having the gradient that we need to update along, it is unclear what learning rate we should use to perform the said update. Unlike in deep learning, where the next iteration would correct if we overstep along the gradient, an overstep in our policy can lead to evaluation over an incorrect policy and can essentially wipe out all we have learned till now. Trust Region policy optimizations (TRPO) by \cite{trpo} and Proximal Policy Optimizations (PPO) by \cite{ppo} are methods that address this. Furthermore, to increase sample efficiency, Direct Deterministic Policy Gradients (DDPG) by \cite{ddpg}, and Soft Actor critic (SAC) \cite{sac} are used.
 
 \subsubsection{Actor Critic Methods}
 
