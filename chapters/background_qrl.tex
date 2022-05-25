@@ -23,11 +23,11 @@ Quantum Computers store information as quantum bits, or qubits. These qubits evo
 
 A classical bit can be either 0 or 1. However, a qubit can live in any state inbetween 0 or 1, which is understood as being in a weighted superposition of the 0 and 1 states. So the state of a qubit 
 \begin{equation}
-    \ket{\psi} = \alpha \ket{0} + \beta \ket{1} = \begin{bmatrix}\alpha \\ \beta\end{bmatrix} \;\;\text{such that }\alpha^* \alpha + \beta^* \beta = 1 \text{ and } \alpha, \beta \in \mathbb{C}
+    \ket{\psi} = \alpha \ket{0} + \beta \ket{1} = \begin{bmatrix}\alpha \\ \beta\end{bmatrix} \;\;\text{such that }|\alpha|^2 + |\beta|^2 = 1 \text{ and } \alpha, \beta \in \mathbb{C}
 \end{equation}
-where the normalization of probabilities forces. However this state of the qubit is not accessible to us, and we can only measure the qubit probabilistically, with probability of being $\ket{0}$ being $\alpha^2$ and that of $\ket{1}$ being $\beta^2$.
+where the normalization of probabilities forces. However this state of the qubit is not accessible to us, and we can only measure the qubit probabilistically, with probability of being $\ket{0}$ being $|\alpha|^2$ and that of $\ket{1}$ being $\beta^2$.
 
-Each qubit, in addition to the superposition it is in, also has a phase term, which is represented on the Bloch-sphere \ref{fig:bloch-sphere} on the x-y plane. The phase does not affect the immediate measurement of the qubit but can affect the resultant phase and superposition when some unitary operation is applied to the qubit.
+Each qubit, in addition to the superposition it is in, also has a phase term, which is represented on the Bloch-sphere \ref{fig:bloch-sphere} on the $\hat{x}-\hat{y}$ plane. The phase does not affect the immediate measurement of the qubit but can affect the resultant phase and superposition when some unitary operation is applied to the qubit.
 
 \begin{figure}[ht]
     \centering
@@ -41,10 +41,10 @@ Each qubit, in addition to the superposition it is in, also has a phase term, wh
 \label{sec:background-unitary-gate-entanglement}
 
 The state of a system of qubits can be modified by gates. The  gates that can executed on a quantum computer are those that apply norm-preserving linear transforms on the state vector.
-\begin{equation}
+\begin{equation}\label{eqn:gates-transforming-qubits}
     \ket{\psi_1^\prime \otimes \psi_2^\prime \otimes \ldots \otimes \psi_n^\prime} = U_{2^n \times 2^n} \ket{\psi_1 \otimes \psi_2 \otimes \ldots \otimes \psi_n}
 \end{equation}
-When we transform the state as $\ket{\psi} \rightarrow \ket{U \psi}$, the norm of the state transforms as $\braket{\psi | \psi} \rightarrow \braket{\psi U^\dagger U \psi}$. To ensure that norm is preserved, we need the $U^\dagger U = \mathbb{I}$, so all gates on quantum computers must be unitaries.
+When we transform the state as $\ket{\psi} \rightarrow U \ket{\psi}$, the norm of the state transforms as $\braket{\psi | \psi} \rightarrow \braket{\psi U^\dagger \vert U \psi}$. To ensure that norm is preserved, we need the $U^\dagger U = \mathbb{I}$, so all gates on quantum computers must be unitaries.
 
 
 \begin{figure}[ht]
@@ -56,6 +56,7 @@ When we transform the state as $\ket{\psi} \rightarrow \ket{U \psi}$, the norm o
 
 Some multi-qubit gates introduce a property called Entanglement. Examples of such gates are CNOT, CZ, etc. Once two qubits are "entangled" through some such operation like CNOT, their state cannot be written as a product of the individual states of the qubits; they are now linked in a way that the probability distribution of collapsing either state along the measurement axis is not factorizable. 
 
+The state of an entangled system of $n$-qubits can be represented by a unit-norm state-vector in $\mathbb{C}^{2^n}$. This is because each of the bit-vectors of n-bits which can be an outcome of measurement need to have their probabilities and phases represented. A linear transform on such a system is therefore defined by a matrix of shape $2^n \times 2^n$, as mentioned in equation \ref{eqn:gates-transforming-qubits}.
 
 \subsection{Density Matrices and Noise}
 
@@ -128,7 +129,7 @@ Shor's Algorithm is used to perform factorization of an integer product of two l
 \begin{enumerate}
     \item \textbf{Preparing the Unitary}: We need to model a unitary operator which performs modular multiplication by some constant $a$.
     \begin{equation}
-        U \ket{y} = \ket{ay \mod N}
+        U \ket{y} = \ket{ay \;\text{mod}\; N}
     \end{equation}
     The n-qubit states for our quantum system are being represented as $\ket{0}, \ket{1}, \cdots \ket{N - 1}$, on the qubits they are being represented as the bitstrings corresponding to those numbers.
     \item \textbf{Period Finding to Phase Estimation}: Generate a linear combination of states which is an eigenstate of the unitary operator. The states in the linear combination will form an r-element subgroup, and the phase terms multiplied to each state will be the r-th roots of unity.
@@ -159,17 +160,17 @@ The most natural solution is to use the quantum systems to emulate other quantum
 
 There are many ways of performing Hamiltonian simulation on general-purpose gate-based quantum computers. Some of those methods are listed below:
 \begin{itemize}
-    \item Using Trotterization: Given a hamiltonian which can be represented as a linear combination of local Hamiltonians, $H = A + B + C$, the trotter decomposition of Unitary corresponding to the Hamiltonian can be approximated by
+    \item Using Trotterization \cite{method-suzuki-trotter-decomposition}: Given a hamiltonian which can be represented as a linear combination of local Hamiltonians, $H = A + B + C$, the trotter decomposition of Unitary corresponding to the Hamiltonian can be approximated by
     \begin{equation}
         U = e^{-i H t} = (e^{-i A t / r} e^{-i B t / r} e^{-i C t / r})^r
     \end{equation}
     For larger values of $r$ this results in a pretty accurate simulation.
-    \item Using Taylor Expansion of Hamiltonian: The Hamiltonian can be expanded out as a sum of unitaries, and then the corresponding unitary can be taylor-series expanded out as a linear combination of the unitaries corresponding to terms of the Taylor expansion.
+    \item Using Taylor Expansion of Hamiltonian \cite{hamiltonian-sim-methods-taylor}: The Hamiltonian can be expanded out as a sum of unitaries, and then the corresponding unitary can be taylor-series expanded out as a linear combination of the unitaries corresponding to terms of the Taylor expansion.
     \begin{equation}
         U = e^{-i H t} = \sum_{n=0}^{\infty} \frac{(-i H t)^n}{n!}
     \end{equation}
-    \item Using Quantum Walks: Quantum walks can be constructed corresponding to the Hamiltonian such that the spectrum of the graph on which the walk is constructed is such that its eigenvalues correspond to the ground state of the target Hamiltonian.
-    \item Using Quantum Signal Processing: The QSP algorithm transduces eigenvalues of the Hamiltonian into an ancilla, then transforms the eigenvalues with single-qubit rotations, and finally projects it back to the ancilla.
+    \item Using Quantum Walks \cite{hamiltonian-sim-methods-qwalks}: Quantum walks can be constructed corresponding to the Hamiltonian such that the spectrum of the graph on which the walk is constructed is such that its eigenvalues correspond to the ground state of the target Hamiltonian.
+    \item Using Quantum Signal Processing \cite{hamiltonian-sim-methods-qsp-1,hamiltonian-sim-methods-qsp-2}: The QSP algorithm transduces eigenvalues of the Hamiltonian into an ancilla, then transforms the eigenvalues with single-qubit rotations, and finally projects it back to the ancilla.
 \end{itemize}
 
 
