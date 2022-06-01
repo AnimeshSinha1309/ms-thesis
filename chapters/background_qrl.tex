@@ -27,12 +27,12 @@ A classical bit can be either 0 or 1. However, a qubit can live in any state inb
 \end{equation}
 where the normalization of probabilities forces. However this state of the qubit is not accessible to us, and we can only measure the qubit probabilistically, with probability of being $\ket{0}$ being $|\alpha|^2$ and that of $\ket{1}$ being $\beta^2$.
 
-Each qubit, in addition to the superposition it is in, also has a phase term, which is represented on the Bloch-sphere \ref{fig:bloch-sphere} on the $\hat{x}-\hat{y}$ plane. The phase does not affect the immediate measurement of the qubit but can affect the resultant phase and superposition when some unitary operation is applied to the qubit.
+Each qubit, in addition to the superposition it is in, also has a phase term, which is represented on the Bloch-sphere (Figure \ref{fig:bloch-sphere}) on the $\hat{x}-\hat{y}$ plane. The phase does not affect the immediate measurement of the qubit but can affect the resultant phase and superposition when some unitary operation is applied to the qubit.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.4\linewidth]{figures/quantum/bloch_sphere.png}
-    \caption[Block Sphere representation of Quantum States]{Bloch Sphere represents the state of a qubit $\ket{\psi}$. The pure states $\ket{0}$ and $\ket{1}$ are the vectors along the z-axis on the opposite poles. The angle along the x-y plane represents the phase of the qubits.}
+    \caption[Block Sphere representation of Quantum States]{Bloch-sphere represents the state of a qubit $\ket{\psi}$. The pure states $\ket{0}$ and $\ket{1}$ are the vectors along the z-axis on the opposite poles. The angle along the x-y plane represents the phase of the qubits.}
     \label{fig:bloch-sphere}
 \end{figure}
 
@@ -49,11 +49,11 @@ When we transform the state as $\ket{\psi} \rightarrow U \ket{\psi}$, the norm o
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=0.6\linewidth]{figures/quantum/quantum_logic_gates.png}
-    \caption[List of Logic Gates]{Popular logic gates along with their in-circuit representations and corresponding unitary matrices. $X$, $Y$, $X$, $H$, $S$, $P$ and $T$ are all single qubit gates. $X$ is a $180^o$ rotation of the bloch sphere around the $X$ axis, same with $Y$ and $Z$. $R_x(\theta) = e^{-i X \theta / 2}$ is a rotation of $\theta$ angle around the X-axis, same with the other axes. $CX$ is a controlled form of the $X$ gate, where one qubit participating in the operation is the controller, and if it's in the $\ket{1}$ state then $X$ gate will be applied on the qubit, and not if it was in the $\ket{0}$ state. Such gates result in the two qubits becoming entangled, other controlled gates are $CNOT$ (controlled version of $Z$), $CR_x(\theta)$ (Controlled version of rotation along $X$), etc. \cite{book-nielsen-chuang}}
+    \caption[List of Logic Gates]{Popular logic gates along with their in-circuit representations and corresponding unitary matrices. $X$, $Y$, $X$, $H$, $S$, $P$ and $T$ are all single qubit gates. $X$ is a $180^o$ rotation of the bloch-sphere around the $X$ axis, same with $Y$ and $Z$. $R_x(\theta) = e^{-i X \theta / 2}$ is a rotation of $\theta$ angle around the X-axis, same with the other axes. $CX$ is a controlled form of the $X$ gate, where one qubit participating in the operation is the controller, and if it's in the $\ket{1}$ state then $X$ gate will be applied on the qubit, and not if it was in the $\ket{0}$ state. Such gates result in the two qubits becoming entangled, other controlled gates are $CNOT$ (controlled version of $Z$), $CR_x(\theta)$ (Controlled version of rotation along $X$), etc. \cite{book-nielsen-chuang}}
     \label{fig:quantum-unitary-gates}
 \end{figure}
 
-Some multi-qubit gates introduce a property called Entanglement. Examples of such gates are CNOT, CZ, etc. Once two qubits are "entangled" through some such operation like CNOT, their state cannot be written as a product of the individual states of the qubits; they are now linked in a way that the probability distribution of collapsing either state along the measurement axis is not factorizable. 
+Some multi-qubit gates introduce a property called Entanglement. Examples of such gates are CNOT, CZ, etc (See figure \ref{fig:quantum-unitary-gates}). Once two qubits are "entangled" through some such operation like CNOT, their state cannot be written as a product of the individual states of the qubits; they are now linked in a way that the probability distribution of collapsing either state along the measurement axis is not factorizable. 
 
 The state of an entangled system of $n$-qubits can be represented by a unit-norm state-vector in $\mathbb{C}^{2^n}$. This is because each of the bit-vectors of n-bits which can be an outcome of measurement need to have their probabilities and phases represented. A linear transform on such a system is therefore defined by a matrix of shape $2^n \times 2^n$, as mentioned in equation \ref{eqn:gates-transforming-qubits}.
 
@@ -189,6 +189,7 @@ Each optimization problem is solved over a parameter space and attempts to maxim
     \centering
     \includegraphics[width=0.7\linewidth]{figures/intro/qaoa-optimization.png}
     \caption[Variational Circuit for QAOA]{An example of a QAOA circuit with $p = 1$ blocks and generated to compute max-cut on a graph with 3-nodes and 2-edges between (0, 2) and (1, 0). The state generated by the circuit is parameterized in terms of the five parameters in the circuit. The output along the z-axis is measured and used to compute the classical loss value, i.e., the size of the max-cut given to which each node (represented by a qubit) belongs. Finally, a classical optimizer is used to reduce the value of the loss function such that resulting ansatz from the optimization process represents the cut of minimum size.}
+    \label{fig:circuit-for-qaoa}
 \end{figure}
 
 Quantum Approximate Optimization Algorithms are a class of variational quantum algorithms used as a general-purpose hammer to solve combinatorial optimization problems probabilistically \cite{qaoa-max-cut-farhi}.
@@ -197,7 +198,7 @@ Quantum Approximate Optimization Algorithms are a class of variational quantum a
 
 QAOA takes that philosophy to the gate-computation model and uses the Suzuki-Trotter \cite{method-suzuki-trotter-decomposition} decomposition to approximate the application of unitaries corresponding to these Hamiltonians for sufficiently short periods of time.
 
-\paragraph*{Algorithm}: The following steps are performed to execute QAOA for a given optimization problem.
+\paragraph*{Algorithm}: The following steps are performed to execute QAOA for a given optimization problem. (See figure \ref{fig:circuit-for-qaoa})
 \begin{enumerate}
     \item \textbf{Prepare the initial state}: We start by applying a Hadamard on all qubits to create an initial state which is an equal superposition of all basis states.
     \item \textbf{Apply the mixing unitary}: The mixing unitary corresponds to the mixing Hamiltonian as follows.
