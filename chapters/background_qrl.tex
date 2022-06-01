@@ -31,7 +31,7 @@ Each qubit, in addition to the superposition it is in, also has a phase term, wh
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{figures/quantum/bloch_sphere.png}
+    \includegraphics[width=0.4\linewidth]{figures/quantum/bloch_sphere.png}
     \caption[Block Sphere representation of Quantum States]{Bloch Sphere represents the state of a qubit $\ket{\psi}$. The pure states $\ket{0}$ and $\ket{1}$ are the vectors along the z-axis on the opposite poles. The angle along the x-y plane represents the phase of the qubits.}
     \label{fig:bloch-sphere}
 \end{figure}
@@ -46,10 +46,9 @@ The state of a system of qubits can be modified by gates. The  gates that can ex
 \end{equation}
 When we transform the state as $\ket{\psi} \rightarrow U \ket{\psi}$, the norm of the state transforms as $\braket{\psi | \psi} \rightarrow \braket{\psi U^\dagger \vert U \psi}$. To ensure that norm is preserved, we need the $U^\dagger U = \mathbb{I}$, so all gates on quantum computers must be unitaries.
 
-
-\begin{figure}[ht]
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.7\linewidth]{figures/quantum/quantum_logic_gates.png}
+    \includegraphics[width=0.6\linewidth]{figures/quantum/quantum_logic_gates.png}
     \caption[List of Logic Gates]{Popular logic gates along with their in-circuit representations and corresponding unitary matrices. $X$, $Y$, $X$, $H$, $S$, $P$ and $T$ are all single qubit gates. $X$ is a $180^o$ rotation of the bloch sphere around the $X$ axis, same with $Y$ and $Z$. $R_x(\theta) = e^{-i X \theta / 2}$ is a rotation of $\theta$ angle around the X-axis, same with the other axes. $CX$ is a controlled form of the $X$ gate, where one qubit participating in the operation is the controller, and if it's in the $\ket{1}$ state then $X$ gate will be applied on the qubit, and not if it was in the $\ket{0}$ state. Such gates result in the two qubits becoming entangled, other controlled gates are $CNOT$ (controlled version of $Z$), $CR_x(\theta)$ (Controlled version of rotation along $X$), etc. \cite{book-nielsen-chuang}}
     \label{fig:quantum-unitary-gates}
 \end{figure}
