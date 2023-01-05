@@ -23,6 +23,8 @@
 \usepackage{listings}
 \usepackage{xtab}
 \usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{color}
 
 
 \long\def\symbolfootnote[#1]#2{\begingroup%
@@ -40,7 +42,7 @@
 %% COPYRIGHT PAGE
 \newpage
 \thispagestyle{empty}
-\renewcommand{\thesisdedication}{{\large Copyright \copyright~~Animesh Sinha, 2022\\}{\large All Rights Reserved\\}}
+\renewcommand{\thesisdedication}{{\large Copyright \copyright~~Animesh Sinha, 2023\\}{\large All Rights Reserved\\}}
 \thesisdedicationpage
 
 %% CERTIFICATE PAGE
@@ -103,9 +105,14 @@
 
 %%% Optional appendix
 \appendix
+
 \chapter{qRoute: Algorithm Details and Additional Results}
 \label{ch:appendix-qroute}
 \input{chapters/appendix_qroute.tex}
+
+\chapter{qLEET: Additional Results and Usage Tutorial}
+\label{ch:appendix-qleet}
+\input{chapters/appendix_qleet.tex}
 
 %--------------------------------------------------------
 % Recommended 'Related Publication'

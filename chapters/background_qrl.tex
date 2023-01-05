@@ -94,7 +94,7 @@ Grover's search is an algorithm to search for some target element or set of elem
 \paragraph*{Overview of the Algorithm}: Following is a brief explanation of how Grover's Algorithm operates:
 
 \begin{enumerate}
-    \item \textbf{Preparing the initial superposition of bitstrings:} The initial state should be the superposition of all elements in our search domain. Since these are the indices of the elements we are searching over, we can take this to be an equal superposition of all basis states, constructed by applying the hadamard gate over all qubits.
+    \item \textbf{Preparing the initial superposition of bitstrings}: The initial state should be the superposition of all elements in our search domain. Since these are the indices of the elements we are searching over, we can take this to be an equal superposition of all basis states, constructed by applying the hadamard gate over all qubits.
     \begin{equation}
         \ket{x} = \ket{s} = \frac{1}{\sqrt{n}} \sum_{i=1}^{n} \ket{b_i}
     \end{equation}
@@ -286,7 +286,7 @@ Instead of associating a value with each state, we can associate it with a state
 
 \subsection{Reinforcement Learning Algorithms}
 
-In the following sections, we shall see three kinds of models:
+In the following sections, we shall see four classes of models:
 \begin{itemize}
     \item Value Function Optimizers
     \item Policy Function Optimizers
@@ -327,7 +327,7 @@ Following are the benefits of attempting to learn the policy directly instead of
     \item Many a time, the action space is continuous or intractably large, and maximizing the value over all the actions is not feasible. Here we can only use policy-based methods. The routing problem's action space fits the bill for this.
 \end{enumerate}
 
-\paragraph{Method:}
+\paragraph{Method}
 To optimize our policy, we sample trajectories from our policy and increase the probability of actions in trajectories that obtain high rewards and lower the probability of those with lesser rewards.
 
 The utility of our policy is the expected reward under trajectories sampled from this policy; this is the quantity we wish to maximize over the parameters $\theta$. To perform this maximization, we compute $\nabla_\theta U(\theta)$ and update the parameter vector as $\theta \leftarrow \theta + \epsilon \nabla_\theta U(\theta)$. The gradient only depends on the gradient of the log of our policy function scaled by the rewards obtained along the trajectory and, very importantly, does not depend on the true transition model. Equation \ref{eqn:policy-grad} follows from a mathematically involved derivation done in \cite{policy-grad-theorem}.
@@ -336,7 +336,7 @@ The utility of our policy is the expected reward under trajectories sampled from
     \nabla_\theta U(\theta) \leftarrow \frac{1}{m} \sum_{i=1}^{m} \sum_{t=0}^{H-1} \nabla_\theta \log \pi_\theta (u_t^{(i)}|s_t^{(i)}) \Bigg(\sum_{k=t}^{H-1} R(s_k^{(i)}, u_k^{(i)}) - b(s_t^{(i)})\Bigg)
 \end{equation}
 
-\paragraph{Other Nuances:} Despite having the gradient that we need to update along, it is unclear what learning rate we should use to perform the said update. Unlike in deep learning, where the next iteration would correct if we overstep along the gradient, an overstep in our policy can lead to evaluation over an incorrect policy and can essentially wipe out all we have learned till now. Trust Region policy optimizations (TRPO) by \cite{trpo} and Proximal Policy Optimizations (PPO) by \cite{ppo} are methods that address this. Furthermore, to increase sample efficiency, Direct Deterministic Policy Gradients (DDPG) by \cite{ddpg}, and Soft Actor critic (SAC) \cite{sac} are used.
+\paragraph{Other Nuances}: Despite having the gradient that we need to update along, it is unclear what learning rate we should use to perform the said update. Unlike in deep learning, where the next iteration would correct if we overstep along the gradient, an overstep in our policy can lead to evaluation over an incorrect policy and can essentially wipe out all we have learned till now. Trust Region policy optimizations (TRPO) by \cite{trpo} and Proximal Policy Optimizations (PPO) by \cite{ppo} are methods that address this. Furthermore, to increase sample efficiency, Direct Deterministic Policy Gradients (DDPG) by \cite{ddpg}, and Soft Actor critic (SAC) \cite{sac} are used.
 
 \subsubsection{Actor Critic Methods}
 
